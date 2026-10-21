@@ -1,737 +1,295 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Huma Traders - Smart Advance Billing & POS</title>
-    
-    <!-- PWA Web App Manifest Link & Meta -->
-    <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#b45309">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- FontAwesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        brand: {
-                            50: '#fffbeb',
-                            100: '#fef3c7',
-                            500: '#d97706',
-                            600: '#b45309',
-                            700: '#92400e',
-                            800: '#78350f',
-                            900: '#451a03',
-                        },
-                        navy: {
-                            800: '#1e293b',
-                            900: '#0f172a'
-                        }
-                    },
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                    }
-                }
-            }
-        }
-
-        // Register PWA Service Worker
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                const swCode = `
-                    const CACHE_NAME = 'huma-pos-v3';
-                    self.addEventListener('install', (e) => {
-                        e.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(['./', './index.html', './manifest.json'])));
-                    });
-                    self.addEventListener('fetch', (e) => {
-                        e.respondWith(caches.match(e.request).then(response => response || fetch(e.request)));
-                    });
-                `;
-                const blob = new Blob([swCode], { type: 'application/javascript' });
-                navigator.serviceWorker.register(URL.createObjectURL(blob)).catch(err => console.log('SW error: ', err));
-            });
-        }
-    </script>
-    <style>
-        /* Thermal Print Styles */
-        @media print {
-            body * {
-                visibility: hidden;
-            }
-            #printable-receipt, #printable-receipt * {
-                visibility: visible;
-            }
-            #printable-receipt {
-                position: absolute;
-                left: 0;
-                top: 0;
-                width: 100%;
-                margin: 0;
-                padding: 10px;
-                background: #fff;
-                color: #000;
-            }
-            .no-print {
-                display: none !important;
-            }
-        }
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #f1f5f9;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
-            border-radius: 4px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #94a3b8;
-        }
-    </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#123c32">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<title>HUMA TRADERS | Professional Pro POS</title>
+<link rel="manifest" href="./manifest.json">
+<style>
+:root{--green:#123c32;--green2:#17634f;--mint:#e7f5ef;--gold:#e8b34b;--bg:#f3f6f5;--ink:#182421;--muted:#65736e;--line:#dce5e1;--white:#fff;--red:#b42318;--blue:#175cd3;--shadow:0 4px 16px #102e2410}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.45 system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}button,input,select,textarea{font:inherit}button{cursor:pointer}button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid #e8b34b88;outline-offset:1px}
+.top{background:linear-gradient(120deg,#123c32,#1b5b49);color:white;padding:calc(12px + env(safe-area-inset-top)) 14px 12px;position:sticky;top:0;z-index:20;box-shadow:0 3px 12px #0002}.toprow{display:flex;align-items:center;justify-content:space-between;gap:10px;max-width:1250px;margin:auto}.brand{display:flex;align-items:center;gap:10px;min-width:0}.logo{width:43px;height:43px;border-radius:13px;background:#fff;color:var(--green);display:grid;place-items:center;font-size:21px;font-weight:900;border:2px solid #e8b34b;flex-shrink:0}.brand h1{font-size:17px;letter-spacing:.5px;margin:0;font-weight:900}.brand p{font-size:11px;margin:2px 0 0;color:#d4e8df}.date{font-size:11px;text-align:right;color:#e3eee9}.top-actions{display:flex;gap:6px;margin-top:10px;max-width:1250px;margin-left:auto;margin-right:auto}.top-actions button{border:1px solid #ffffff35;background:#ffffff12;color:white;padding:8px 10px;border-radius:9px;font-weight:700;font-size:12px;white-space:nowrap}
+main{max-width:1250px;margin:auto;padding:13px 12px 100px}.tabs{display:flex;gap:7px;overflow-x:auto;padding:2px 0 12px;scrollbar-width:thin}.tab{border:1px solid var(--line);background:#fff;color:#4b5b55;border-radius:11px;padding:10px 13px;white-space:nowrap;font-weight:750;box-shadow:0 1px 3px #00004}.tab.active{background:var(--green);border-color:var(--green);color:white}.page{display:none}.page.active{display:block}.cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin-bottom:13px}.metric{background:#fff;border:1px solid var(--line);border-radius:14px;padding:13px;box-shadow:var(--shadow);min-width:0}.metric .label{font-size:11px;color:var(--muted);font-weight:700}.metric .value{font-size:21px;font-weight:900;margin-top:5px;overflow-wrap:anywhere}.metric .hint{font-size:10px;color:var(--muted);margin-top:2px}.panel{background:white;border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);overflow:hidden;margin-bottom:13px}.panel-head{padding:13px 14px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}.panel-head h2{font-size:15px;margin:0}.panel-body{padding:13px}.muted{color:var(--muted)}.small{font-size:11px}.row{display:flex;gap:8px;align-items:center}.between{display:flex;justify-content:space-between;align-items:center;gap:10px}.stack{display:grid;gap:10px}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:9px}.field{display:grid;gap:5px;min-width:0}.field label{font-size:11px;color:#52615b;font-weight:750}.field input,.field select,.field textarea,.search{width:100%;min-width:0;border:1px solid #ccd8d2;background:#fbfdfc;padding:10px 11px;border-radius:9px;color:var(--ink)}.field textarea{min-height:70px;resize:vertical}.btn{border:0;border-radius:9px;padding:10px 12px;background:var(--green);color:#fff;font-weight:800;display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:39px}.btn.gold{background:#d99a22;color:#1e2b25}.btn.light{background:#e8f2ed;color:var(--green)}.btn.gray{background:#e9eeeb;color:#394841}.btn.red{background:#feeceb;color:var(--red)}.btn.blue{background:#eaf2ff;color:var(--blue)}.btn.sm{padding:7px 9px;min-height:32px;font-size:11px}.btn.full{width:100%}.btn:disabled{opacity:.45;cursor:not-allowed}.pos-layout{display:grid;grid-template-columns:1fr;gap:13px}.products-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;max-height:none}.product-card{border:1px solid var(--line);border-radius:12px;padding:11px;background:white;min-width:0;display:flex;flex-direction:column;gap:6px;text-align:left;color:var(--ink);box-shadow:0 1px 4px #00004}.product-card:active{transform:scale(.99)}.product-card .pname{font-weight:800;font-size:12px;line-height:1.35;overflow-wrap:anywhere}.pill{display:inline-flex;background:var(--mint);color:var(--green);font-size:10px;padding:3px 6px;border-radius:99px;font-weight:800;max-width:100%;overflow-wrap:anywhere}.stock{font-size:10px;color:var(--muted)}.stock.low{color:var(--red);font-weight:800}.price{font-size:17px;font-weight:900;color:var(--green)}.cart-line{border-bottom:1px solid #edf1ef;padding:10px 0;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px}.cart-line:last-child{border-bottom:0}.qty{display:flex;align-items:center;gap:5px}.qty button{width:30px;height:30px;border:1px solid var(--line);border-radius:8px;background:#f4f7f5;font-weight:900}.qty input{width:62px;text-align:center;padding:6px 3px;border:1px solid var(--line);border-radius:7px}.summaryline{display:flex;justify-content:space-between;gap:12px;padding:4px 0}.grand{font-size:19px;font-weight:950;color:var(--green);border-top:1px dashed #aabbb2;margin-top:8px;padding-top:10px}.tablewrap{overflow:auto}table{border-collapse:collapse;width:100%;min-width:580px;font-size:12px}th,td{padding:10px 9px;border-bottom:1px solid #edf1ef;text-align:left;vertical-align:middle}th{background:#f5f8f6;color:#52615b;font-size:10px;text-transform:uppercase;letter-spacing:.3px;position:sticky;top:0}td .btn{margin:2px}.empty{text-align:center;padding:28px 10px;color:var(--muted)}.status{padding:3px 7px;border-radius:20px;background:#e8f2ed;color:var(--green);font-weight:800;font-size:10px}.status.due{background:#fff0e0;color:#a65a00}.status.low{background:#feeceb;color:var(--red)}.notice{background:#fff8e7;border:1px solid #f4dda1;color:#6c4c08;border-radius:10px;padding:10px;font-size:12px}.bottomnav{position:fixed;bottom:0;left:0;right:0;z-index:25;background:#fffffff2;backdrop-filter:blur(12px);border-top:1px solid var(--line);padding:7px 5px calc(7px + env(safe-area-inset-bottom));display:grid;grid-template-columns:repeat(5,1fr);gap:3px}.bottomnav button{border:0;background:transparent;color:#66746e;font-size:10px;font-weight:800;padding:7px 2px;border-radius:10px;display:grid;justify-items:center;gap:3px}.bottomnav button span{font-size:19px;line-height:1}.bottomnav button.active{background:#e5f2eb;color:var(--green)}.modal{display:none;position:fixed;inset:0;background:#071b15a8;z-index:50;padding:14px;align-items:center;justify-content:center}.modal.show{display:flex}.modalbox{background:#fff;border-radius:16px;width:min(560px,100%);max-height:92dvh;overflow:auto;box-shadow:0 20px 60px #0004}.modalhead{position:sticky;top:0;background:var(--green);color:white;padding:14px;display:flex;justify-content:space-between;align-items:center;z-index:2}.modalhead h3{margin:0;font-size:15px}.modalbody{padding:14px}.modalfoot{display:flex;gap:8px;justify-content:flex-end;padding-top:12px}.hidden{display:none!important}.right{text-align:right}.danger-text{color:var(--red)}.footer-note{text-align:center;color:#718078;font-size:10px;padding:10px}.setting-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}.file-label{display:flex;align-items:center;justify-content:center}.tag{font-size:10px;font-weight:800;border:1px solid var(--line);padding:4px 7px;border-radius:8px;color:var(--muted)}
+@media(min-width:760px){main{padding:20px 20px 35px}.cards{grid-template-columns:repeat(4,minmax(0,1fr))}.pos-layout{grid-template-columns:minmax(0,1.15fr) minmax(340px,.85fr);align-items:start}.products-grid{grid-template-columns:repeat(3,minmax(0,1fr));max-height:66vh;overflow:auto;padding:2px}.cart-panel{position:sticky;top:150px}.bottomnav{display:none}.top-actions{justify-content:flex-end}.brand h1{font-size:19px}.product-card .pname{font-size:13px}}
+@media(max-width:380px){.brand h1{font-size:15px}.date{display:none}.top-actions{overflow-x:auto}.top-actions button{font-size:11px}.metric .value{font-size:18px}.grid2{grid-template-columns:1fr}.products-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media print{
+ @page{margin:4mm;size:auto}
+ body{background:white!important;color:#000!important;font:10px/1.25 monospace}
+ body *{visibility:hidden!important}
+ #print-area,#print-area *{visibility:visible!important}
+ #print-area{position:absolute;left:0;top:0;width:100%;padding:0!important;margin:0!important;border:0!important;box-shadow:none!important;background:white!important;color:#000!important}
+ .no-print{display:none!important}
+ .receipt{width:100%!important;max-width:none!important;border:0!important;padding:0!important;margin:0!important}
+ .receipt h2{text-align:center;font-size:15px;margin:0 0 3px}
+ .receipt p{margin:2px 0}
+ .receipt table{min-width:0!important;width:100%;font-size:9px}
+ .receipt th,.receipt td{padding:3px 1px;border-bottom:1px dashed #888}
+ .receipt th{position:static;background:white}
+ .receipt .grand{color:#000;font-size:12px}
+}
+</style>
 </head>
-<body class="bg-slate-100 font-sans text-slate-800 antialiased min-h-screen flex flex-col">
+<body>
+<header class="top no-print">
+ <div class="toprow">
+  <div class="brand"><div class="logo">HT</div><div><h1>HUMA TRADERS</h1><p>Professional Pro · Grocery Billing & POS</p></div></div>
+  <div class="date"><div id="live-date">Loading date…</div><div id="save-status">Local data ready</div></div>
+ </div>
+ <div class="top-actions">
+  <button id="install-btn" class="hidden">⬇ Install App</button>
+  <button onclick="openQuickSale()">＋ Quick Sale</button>
+  <button onclick="openBackup()">⇧ Backup / Export</button>
+ </div>
+</header>
+<main class="no-print">
+ <nav class="tabs" aria-label="Main navigation">
+  <button class="tab active" data-page="pos" onclick="switchPage('pos')">▣ Billing</button>
+  <button class="tab" data-page="inventory" onclick="switchPage('inventory')">▤ Stock</button>
+  <button class="tab" data-page="khata" onclick="switchPage('khata')">▥ Khata</button>
+  <button class="tab" data-page="purchase" onclick="switchPage('purchase')">⇧ Purchase</button>
+  <button class="tab" data-page="reports" onclick="switchPage('reports')">▥ Reports</button>
+  <button class="tab" data-page="settings" onclick="switchPage('settings')">⚙ More</button>
+ </nav>
 
-    <!-- TOP HEADER -->
-    <header class="bg-gradient-to-r from-amber-700 via-amber-600 to-amber-800 text-white shadow-md no-print sticky top-0 z-30">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex flex-wrap justify-between items-center gap-2">
-            <!-- Brand Info -->
-            <div class="flex items-center space-x-3">
-                <div class="w-10 h-10 rounded-xl bg-white text-amber-700 flex items-center justify-center font-bold text-xl shadow-inner border border-amber-300">
-                    <i class="fa-solid me-0.5 fa-store"></i>
-                </div>
-                <div>
-                    <h1 class="text-xl font-extrabold tracking-tight leading-none uppercase">Huma Traders</h1>
-                    <p class="text-xs text-amber-200 mt-0.5 font-medium">Smart Advance Billing & POS • Solapur</p>
-                </div>
-            </div>
-
-            <!-- Header Quick Stats / Action -->
-            <div class="flex items-center space-x-3 text-xs sm:text-sm">
-                <button id="pwa-install-btn" class="hidden bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-lg font-bold shadow transition flex items-center gap-1.5">
-                    <i class="fa-solid fa-download"></i> Install App
-                </button>
-                <div class="bg-amber-800/60 backdrop-blur px-3 py-1.5 rounded-lg border border-amber-500/30 flex items-center gap-2">
-                    <i class="fa-solid fa-calendar-day text-amber-300"></i>
-                    <span id="current-date-time" class="font-medium">--</span>
-                </div>
-                <button onclick="resetDataModal()" class="bg-amber-900/40 hover:bg-amber-900/70 text-amber-100 px-3 py-1.5 rounded-lg border border-amber-500/30 transition flex items-center gap-1.5" title="Reset Demo Data">
-                    <i class="fa-solid fa-rotate-right text-xs"></i>
-                    <span class="hidden sm:inline">Reset Data</span>
-                </button>
-            </div>
-        </div>
-
-        <!-- NAVIGATION TABS -->
-        <div class="bg-amber-900/40 border-t border-amber-600/30 px-4 sm:px-6 lg:px-8">
-            <div class="max-w-7xl mx-auto flex space-x-1 sm:space-x-4 overflow-x-auto py-1 text-xs sm:text-sm font-medium scrollbar-none">
-                <button onclick="switchTab('pos')" id="tab-btn-pos" class="tab-btn active px-4 py-2 rounded-lg flex items-center gap-2 transition bg-white text-amber-800 font-semibold shadow-sm">
-                    <i class="fa-solid fa-calculator"></i> POS Billing
-                </button>
-                <button onclick="switchTab('khata')" id="tab-btn-khata" class="tab-btn px-4 py-2 rounded-lg flex items-center gap-2 transition hover:bg-amber-700/50 text-amber-100">
-                    <i class="fa-solid fa-book-bookmark"></i> Khata Book (Customer Ledger)
-                </button>
-                <button onclick="switchTab('inventory')" id="tab-btn-inventory" class="tab-btn px-4 py-2 rounded-lg flex items-center gap-2 transition hover:bg-amber-700/50 text-amber-100">
-                    <i class="fa-solid fa-boxes-stacked"></i> Stock & Inventory
-                </button>
-                <button onclick="switchTab('reports')" id="tab-btn-reports" class="tab-btn px-4 py-2 rounded-lg flex items-center gap-2 transition hover:bg-amber-700/50 text-amber-100">
-                    <i class="fa-solid fa-chart-line"></i> Sales History
-                </button>
-            </div>
-        </div>
-    </header>
-
-    <!-- MAIN CONTAINER -->
-    <main class="flex-grow max-w-7xl w-full mx-auto p-3 sm:p-6 no-print">
-
-        <!-- ==================== TAB 1: POS BILLING ==================== -->
-        <section id="tab-pos" class="tab-content grid grid-cols-1 lg:grid-cols-12 gap-5">
-            
-            <!-- LEFT COLUMN: Product Catalog (7 Cols) -->
-            <div class="lg:col-span-7 flex flex-col gap-4">
-                
-                <!-- Search & Filters -->
-                <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex flex-col sm:flex-row gap-3 items-center justify-between">
-                    <div class="relative w-full sm:w-2/3">
-                        <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"></i>
-                        <input type="text" id="pos-search" oninput="renderPOSProducts()" placeholder="Search (e.g. atta, chawal, oil, pwd, soap)..." class="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 transition">
-                    </div>
-                    <select id="pos-category-filter" onchange="renderPOSProducts()" class="w-full sm:w-1/3 py-2 px-3 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 font-medium text-slate-700">
-                        <option value="ALL">All Categories</option>
-                        <option value="Grains & Rice">Grains & Rice</option>
-                        <option value="Oil & Ghee">Oil & Ghee</option>
-                        <option value="Pulses & Spices">Pulses & Spices</option>
-                        <option value="Packaging & Bags">Packaging & Bags</option>
-                        <option value="General Retail">General Retail</option>
-                    </select>
-                </div>
-
-                <!-- Product Grid -->
-                <div id="pos-product-grid" class="grid grid-cols-2 sm:grid-cols-3 gap-3 max-h-[calc(100vh-280px)] overflow-y-auto p-1">
-                    <!-- Dynamic Product Cards -->
-                </div>
-            </div>
-
-            <!-- RIGHT COLUMN: Cart & Checkout (5 Cols) -->
-            <div class="lg:col-span-5 flex flex-col gap-4">
-                <div class="bg-white rounded-xl shadow-sm border border-slate-200 flex flex-col h-full overflow-hidden">
-                    
-                    <!-- Cart Header & Customer Selection -->
-                    <div class="p-4 border-b border-slate-100 bg-slate-50/80">
-                        <div class="flex justify-between items-center mb-3">
-                            <h2 class="font-bold text-slate-800 flex items-center gap-2">
-                                <i class="fa-solid fa-cart-shopping text-amber-600"></i> Current Invoice Cart
-                            </h2>
-                            <button onclick="clearCart()" class="text-xs text-rose-600 hover:text-rose-800 font-semibold hover:underline">
-                                <i class="fa-solid fa-trash-can me-1"></i> Clear Cart
-                            </button>
-                        </div>
-
-                        <!-- Customer Select -->
-                        <div class="flex items-center gap-2">
-                            <div class="relative flex-grow">
-                                <select id="cart-customer-select" class="w-full pl-8 pr-3 py-1.5 text-xs sm:text-sm bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:outline-none font-medium">
-                                    <option value="0">Walk-in Customer (Cash/UPI)</option>
-                                    <!-- Dynamic Customers -->
-                                </select>
-                                <i class="fa-solid fa-user absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-                            </div>
-                            <button onclick="openQuickAddCustomerModal()" class="px-2.5 py-1.5 bg-amber-100 hover:bg-amber-200 text-amber-800 rounded-lg text-xs font-bold transition flex items-center gap-1" title="Add New Customer">
-                                <i class="fa-solid fa-plus"></i> New
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Cart Items List -->
-                    <div id="cart-items-container" class="flex-grow overflow-y-auto p-3 space-y-2 min-h-[200px] max-h-[340px]">
-                        <!-- Dynamic Cart Items -->
-                    </div>
-
-                    <!-- Cart Summary & Calculations -->
-                    <div class="p-4 bg-slate-50 border-t border-slate-200 space-y-2 text-xs sm:text-sm">
-                        <div class="flex justify-between text-slate-600">
-                            <span>Subtotal:</span>
-                            <span class="font-semibold text-slate-800" id="cart-subtotal">₹0.00</span>
-                        </div>
-                        
-                        <!-- Discount & Tax Controls -->
-                        <div class="grid grid-cols-2 gap-2 py-1">
-                            <div>
-                                <label class="block text-[11px] font-medium text-slate-500">Discount (₹)</label>
-                                <input type="number" id="cart-discount" min="0" value="0" oninput="updateCartTotals()" class="w-full px-2 py-1 text-xs border border-slate-300 rounded focus:ring-1 focus:ring-amber-500 focus:outline-none">
-                            </div>
-                            <div>
-                                <label class="block text-[11px] font-medium text-slate-500">Tax / GST (%)</label>
-                                <input type="number" id="cart-tax-rate" min="0" value="0" oninput="updateCartTotals()" class="w-full px-2 py-1 text-xs border border-slate-300 rounded focus:ring-1 focus:ring-amber-500 focus:outline-none">
-                            </div>
-                        </div>
-
-                        <!-- Payment Method Toggle -->
-                        <div class="pt-2">
-                            <label class="block text-xs font-semibold text-slate-700 mb-1">Payment Mode:</label>
-                            <div class="grid grid-cols-3 gap-1.5">
-                                <button onclick="setPaymentMode('CASH')" id="paymode-CASH" class="paymode-btn active border border-amber-600 bg-amber-50 text-amber-700 py-1.5 rounded text-xs font-bold transition flex justify-center items-center gap-1">
-                                    <i class="fa-solid fa-money-bill-wave"></i> Cash
-                                </button>
-                                <button onclick="setPaymentMode('ONLINE')" id="paymode-ONLINE" class="paymode-btn border border-slate-300 bg-white text-slate-600 py-1.5 rounded text-xs font-bold transition flex justify-center items-center gap-1">
-                                    <i class="fa-solid fa-qrcode"></i> UPI/Online
-                                </button>
-                                <button onclick="setPaymentMode('KHATA')" id="paymode-KHATA" class="paymode-btn border border-slate-300 bg-white text-slate-600 py-1.5 rounded text-xs font-bold transition flex justify-center items-center gap-1">
-                                    <i class="fa-solid fa-book-open"></i> Khata (Credit)
-                                </button>
-                            </div>
-                        </div>
-
-                        <!-- Grand Total -->
-                        <div class="flex justify-between items-center pt-2 border-t border-slate-300 text-slate-900 font-extrabold text-base sm:text-lg">
-                            <span>Grand Total:</span>
-                            <span class="text-amber-700" id="cart-grand-total">₹0.00</span>
-                        </div>
-
-                        <!-- Checkout Button -->
-                        <button onclick="processCheckout()" class="w-full mt-2 bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-700 hover:to-amber-800 text-white py-3 rounded-xl font-bold text-sm sm:text-base shadow-md hover:shadow-lg transition flex items-center justify-center gap-2">
-                            <i class="fa-solid fa-receipt text-lg"></i> Complete Sale & Print Bill
-                        </button>
-                    </div>
-
-                </div>
-            </div>
-
-        </section>
-
-
-        <!-- ==================== TAB 2: KHATA BOOK ==================== -->
-        <section id="tab-khata" class="tab-content hidden space-y-5">
-            <!-- Header Summary Cards -->
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 border-l-4 border-l-rose-500">
-                    <p class="text-xs text-slate-500 font-medium">Total Udhar / Credit Outstanding</p>
-                    <h3 class="text-2xl font-bold text-rose-600 mt-1" id="khata-total-credit">₹0.00</h3>
-                </div>
-                <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 border-l-4 border-l-emerald-500">
-                    <p class="text-xs text-slate-500 font-medium">Total Customers Registered</p>
-                    <h3 class="text-2xl font-bold text-slate-800 mt-1" id="khata-customer-count">0</h3>
-                </div>
-                <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 border-l-4 border-l-amber-500 flex items-center justify-between">
-                    <div>
-                        <p class="text-xs text-slate-500 font-medium">Quick Action</p>
-                        <p class="text-sm font-semibold text-slate-700 mt-0.5">Manage Accounts</p>
-                    </div>
-                    <button onclick="openQuickAddCustomerModal()" class="bg-amber-600 hover:bg-amber-700 text-white px-3 py-2 rounded-lg text-xs font-bold shadow transition flex items-center gap-1.5">
-                        <i class="fa-solid fa-user-plus"></i> Add Customer
-                    </button>
-                </div>
-            </div>
-
-            <!-- Customer Search & Table -->
-            <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-                <div class="p-4 border-b border-slate-100 flex flex-col sm:flex-row justify-between items-center gap-3">
-                    <h2 class="font-bold text-slate-800 text-base">Customer Ledger Accounts</h2>
-                    <input type="text" id="khata-search" oninput="renderKhataTable()" placeholder="Search customer by name or phone..." class="w-full sm:w-64 px-3 py-1.5 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-amber-500 focus:outline-none">
-                </div>
-
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left text-xs sm:text-sm text-slate-600">
-                        <thead class="bg-slate-50 text-slate-700 font-bold border-b border-slate-200">
-                            <tr>
-                                <th class="p-3">Customer Name</th>
-                                <th class="p-3">Phone Number</th>
-                                <th class="p-3">Address</th>
-                                <th class="p-3">Pending Udhar / Balance</th>
-                                <th class="p-3 text-right">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="khata-table-body" class="divide-y divide-slate-100">
-                            <!-- Dynamic Customer Rows -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </section>
-
-
-        <!-- ==================== TAB 3: INVENTORY ==================== -->
-        <section id="tab-inventory" class="tab-content hidden space-y-5">
-            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-                <div>
-                    <h2 class="text-lg font-bold text-slate-800">Products & Inventory Control</h2>
-                    <p class="text-xs text-slate-500">Manage item stock levels, loose units, and pricing</p>
-                </div>
-                <button onclick="openAddProductModal()" class="bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded-lg text-xs sm:text-sm font-bold shadow transition flex items-center gap-2">
-                    <i class="fa-solid fa-circle-plus"></i> Add New Item
-                </button>
-            </div>
-
-            <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-                <div class="p-4 border-b border-slate-100 flex flex-col sm:flex-row justify-between items-center gap-3">
-                    <input type="text" id="inventory-search" oninput="renderInventoryTable()" placeholder="Search inventory..." class="w-full sm:w-72 px-3 py-1.5 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-amber-500 focus:outline-none">
-                    <span class="text-xs font-semibold text-slate-500" id="inventory-count-badge">Total Items: 0</span>
-                </div>
-
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left text-xs sm:text-sm text-slate-600">
-                        <thead class="bg-slate-50 text-slate-700 font-bold border-b border-slate-200">
-                            <tr>
-                                <th class="p-3">Product Name</th>
-                                <th class="p-3">Category</th>
-                                <th class="p-3">Price / Unit</th>
-                                <th class="p-3">Base Unit</th>
-                                <th class="p-3">Stock Quantity</th>
-                                <th class="p-3 text-right">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="inventory-table-body" class="divide-y divide-slate-100">
-                            <!-- Dynamic Inventory Rows -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </section>
-
-
-        <!-- ==================== TAB 4: SALES REPORTS ==================== -->
-        <section id="tab-reports" class="tab-content hidden space-y-5">
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 border-l-4 border-l-amber-500">
-                    <p class="text-xs text-slate-500 font-medium">Total Sales Revenue</p>
-                    <h3 class="text-2xl font-bold text-amber-700 mt-1" id="report-total-revenue">₹0.00</h3>
-                </div>
-                <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 border-l-4 border-l-blue-500">
-                    <p class="text-xs text-slate-500 font-medium">Invoices Issued</p>
-                    <h3 class="text-2xl font-bold text-slate-800 mt-1" id="report-total-count">0</h3>
-                </div>
-                <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 border-l-4 border-l-emerald-500">
-                    <p class="text-xs text-slate-500 font-medium">Cash / Online Collected</p>
-                    <h3 class="text-2xl font-bold text-emerald-600 mt-1" id="report-paid-collected">₹0.00</h3>
-                </div>
-            </div>
-
-            <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-                <div class="p-4 border-b border-slate-100">
-                    <h2 class="font-bold text-slate-800 text-base">Completed Transactions</h2>
-                </div>
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left text-xs sm:text-sm text-slate-600">
-                        <thead class="bg-slate-50 text-slate-700 font-bold border-b border-slate-200">
-                            <tr>
-                                <th class="p-3">Invoice #</th>
-                                <th class="p-3">Date & Time</th>
-                                <th class="p-3">Customer</th>
-                                <th class="p-3">Payment Mode</th>
-                                <th class="p-3">Grand Total</th>
-                                <th class="p-3 text-right">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="reports-table-body" class="divide-y divide-slate-100">
-                            <!-- Dynamic Sales Rows -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </section>
-
-    </main>
-
-
-    <!-- ==================== MODALS ==================== -->
-
-    <!-- 1. RECEIPT / PRINT MODAL -->
-    <div id="receipt-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl shadow-2xl max-w-lg w-full max-h-[90vh] flex flex-col overflow-hidden">
-            <!-- Modal Header -->
-            <div class="p-4 bg-slate-800 text-white flex justify-between items-center no-print">
-                <div class="flex items-center gap-2">
-                    <i class="fa-solid fa-print text-amber-400"></i>
-                    <h3 class="font-bold text-sm sm:text-base">Invoice Preview & Print</h3>
-                </div>
-                <button onclick="closeReceiptModal()" class="text-slate-400 hover:text-white font-bold text-lg">&times;</button>
-            </div>
-
-            <!-- Print Controls -->
-            <div class="p-3 bg-slate-100 border-b border-slate-200 flex flex-wrap gap-2 items-center justify-between no-print text-xs">
-                <div class="flex items-center gap-1.5">
-                    <span class="font-semibold text-slate-700">Format:</span>
-                    <select id="receipt-size-select" onchange="changeReceiptFormat()" class="px-2 py-1 bg-white border border-slate-300 rounded focus:outline-none font-medium text-slate-800">
-                        <option value="thermal58">58mm Thermal</option>
-                        <option value="thermal80" selected>80mm Thermal</option>
-                        <option value="a4">A4 Full Invoice</option>
-                    </select>
-                </div>
-                <div class="flex gap-2">
-                    <button onclick="window.print()" class="bg-amber-600 hover:bg-amber-700 text-white px-3 py-1.5 rounded-lg font-bold transition flex items-center gap-1">
-                        <i class="fa-solid fa-print"></i> Print Now
-                    </button>
-                    <button onclick="closeReceiptModal()" class="bg-slate-300 hover:bg-slate-400 text-slate-800 px-3 py-1.5 rounded-lg font-semibold transition">
-                        Done
-                    </button>
-                </div>
-            </div>
-
-            <!-- PRINTABLE RECEIPT CONTAINER -->
-            <div class="p-6 overflow-y-auto flex-grow bg-slate-50 flex justify-center">
-                <div id="printable-receipt" class="bg-white p-4 shadow-sm border border-slate-200 rounded font-mono text-xs w-[300px] transition-all duration-300">
-                    <!-- Dynamic Printable Receipt Content -->
-                </div>
-            </div>
-        </div>
+ <section id="page-pos" class="page active">
+  <div class="cards">
+   <div class="metric"><div class="label">TODAY'S SALES</div><div class="value" id="m-sales">₹0</div><div class="hint">Completed invoices</div></div>
+   <div class="metric"><div class="label">CASH + UPI COLLECTED</div><div class="value" id="m-collected">₹0</div><div class="hint">Actual payments received</div></div>
+   <div class="metric"><div class="label">CUSTOMER UDHAAR</div><div class="value" id="m-credit">₹0</div><div class="hint">Current outstanding</div></div>
+   <div class="metric"><div class="label">LOW STOCK ITEMS</div><div class="value" id="m-low">0</div><div class="hint">At/below reorder level</div></div>
+  </div>
+  <div class="pos-layout">
+   <div class="panel">
+    <div class="panel-head"><h2>Find Products / उत्पाद खोजें</h2><span class="tag" id="product-count">0 items</span></div>
+    <div class="panel-body stack">
+     <input class="search" id="pos-search" placeholder="Search: atta, gehu, chawal, chini, barcode…" oninput="renderPOSProducts()" autocomplete="off">
+     <div class="grid2">
+      <div class="field"><label>Category</label><select id="pos-category" onchange="renderPOSProducts()"><option value="">All categories</option></select></div>
+      <div class="field"><label>Quick quantity</label><select id="quick-unit"><option value="1">1 unit</option><option value="0.5">0.5</option><option value="0.25">0.25</option><option value="2">2 units</option><option value="5">5 units</option></select></div>
+     </div>
+     <div id="pos-products" class="products-grid"></div>
     </div>
-
-
-    <!-- 2. ADD / EDIT CUSTOMER MODAL -->
-    <div id="customer-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden">
-            <div class="p-4 bg-amber-700 text-white flex justify-between items-center">
-                <h3 class="font-bold text-sm sm:text-base" id="customer-modal-title">Add New Customer</h3>
-                <button onclick="closeCustomerModal()" class="text-amber-200 hover:text-white font-bold text-lg">&times;</button>
-            </div>
-            <form onsubmit="saveCustomer(event)" class="p-5 space-y-3 text-xs sm:text-sm">
-                <input type="hidden" id="cust-id">
-                <div>
-                    <label class="block font-medium text-slate-700 mb-1">Customer Full Name *</label>
-                    <input type="text" id="cust-name" required class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:outline-none">
-                </div>
-                <div>
-                    <label class="block font-medium text-slate-700 mb-1">Mobile / Phone Number *</label>
-                    <input type="tel" id="cust-phone" required class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:outline-none">
-                </div>
-                <div>
-                    <label class="block font-medium text-slate-700 mb-1">Address / Location</label>
-                    <input type="text" id="cust-address" placeholder="e.g. Solapur Main Market" class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:outline-none">
-                </div>
-                <div>
-                    <label class="block font-medium text-slate-700 mb-1">Opening Balance / Initial Udhar (₹)</label>
-                    <input type="number" id="cust-balance" value="0" min="0" step="any" class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:outline-none">
-                </div>
-                <div class="pt-3 flex justify-end gap-2">
-                    <button type="button" onclick="closeCustomerModal()" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-lg font-semibold">Cancel</button>
-                    <button type="submit" class="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-lg font-bold shadow">Save Customer</button>
-                </div>
-            </form>
-        </div>
+   </div>
+   <div class="panel cart-panel">
+    <div class="panel-head"><h2>Current Bill / चालू बिल</h2><button class="btn red sm" onclick="clearCart()">Clear</button></div>
+    <div class="panel-body stack">
+     <div class="grid2">
+      <div class="field"><label>Customer</label><select id="cart-customer" onchange="renderCart()"></select></div>
+      <div class="field"><label>Bill type</label><select id="bill-type"><option value="Retail">Retail</option><option value="Wholesale">Wholesale</option></select></div>
+     </div>
+     <div class="row"><button class="btn light sm" onclick="openCustomerModal()">＋ New customer</button><button class="btn gray sm" onclick="holdBill()">Ⅱ Hold bill</button><button class="btn gray sm" onclick="showHeldBills()">Resume</button></div>
+     <div id="cart-items"><div class="empty">Choose a product to start billing.</div></div>
+     <div class="grid2">
+      <div class="field"><label>Discount (₹)</label><input id="discount" type="number" min="0" step="0.01" value="0" oninput="updateTotals()"></div>
+      <div class="field"><label>GST / Tax (%)</label><input id="tax-rate" type="number" min="0" max="100" step="0.01" value="0" oninput="updateTotals()"></div>
+     </div>
+     <div class="field"><label>Payment mode</label><select id="payment-mode" onchange="renderCart()"><option value="CASH">Cash</option><option value="UPI">UPI / Online</option><option value="KHATA">Khata / Udhaar</option><option value="SPLIT">Split: Cash + UPI</option></select></div>
+     <div id="split-fields" class="grid2 hidden"><div class="field"><label>Cash received (₹)</label><input id="split-cash" type="number" min="0" step=".01" value="0" oninput="updateTotals()"></div><div class="field"><label>UPI received (₹)</label><input id="split-upi" type="number" min="0" step=".01" value="0" oninput="updateTotals()"></div></div>
+     <div class="summaryline"><span class="muted">Subtotal</span><b id="subtotal">₹0.00</b></div>
+     <div class="summaryline"><span class="muted">Tax</span><b id="tax-amount">₹0.00</b></div>
+     <div class="summaryline"><span class="muted">Discount</span><b id="discount-amount">−₹0.00</b></div>
+     <div class="summaryline grand"><span>Grand total</span><span id="grand-total">₹0.00</span></div>
+     <button class="btn gold full" onclick="checkout()">✓ Complete Sale & Preview Bill</button>
+     <p class="small muted">Stock reduces only after sale is saved. Check quantity and payment before completing.</p>
     </div>
+   </div>
+  </div>
+ </section>
 
+ <section id="page-inventory" class="page">
+  <div class="cards">
+   <div class="metric"><div class="label">TOTAL PRODUCTS</div><div class="value" id="inv-count">0</div></div>
+   <div class="metric"><div class="label">STOCK VALUE (COST)</div><div class="value" id="inv-value">₹0</div></div>
+   <div class="metric"><div class="label">LOW STOCK</div><div class="value" id="inv-low">0</div></div>
+   <div class="metric"><div class="label">CATEGORIES</div><div class="value" id="inv-cats">0</div></div>
+  </div>
+  <div class="panel">
+   <div class="panel-head"><h2>Products & Stock / माल</h2><button class="btn" onclick="openProductModal()">＋ Add product</button></div>
+   <div class="panel-body stack"><input class="search" id="inventory-search" placeholder="Search product, Marathi/Hindi name, SKU…" oninput="renderInventory()">
+    <div class="row" style="flex-wrap:wrap"><button class="btn light sm" onclick="exportProductsCSV()">Export products CSV</button><label class="btn gray sm file-label">Import CSV<input id="csv-import" type="file" accept=".csv,text/csv" hidden onchange="importProductsCSV(event)"></label></div>
+   </div>
+   <div class="tablewrap"><table><thead><tr><th>Product</th><th>Category</th><th>Cost / Selling</th><th>Stock</th><th>Unit</th><th>Actions</th></tr></thead><tbody id="inventory-body"></tbody></table></div>
+  </div>
+ </section>
 
-    <!-- 3. KHATA PAYMENT SETTLEMENT MODAL -->
-    <div id="settle-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden">
-            <div class="p-4 bg-emerald-700 text-white flex justify-between items-center">
-                <h3 class="font-bold text-sm sm:text-base">Receive Khata Payment</h3>
-                <button onclick="closeSettleModal()" class="text-emerald-200 hover:text-white font-bold text-lg">&times;</button>
-            </div>
-            <form onsubmit="saveKhataPayment(event)" class="p-5 space-y-3 text-xs sm:text-sm">
-                <input type="hidden" id="settle-cust-id">
-                <div>
-                    <p class="text-slate-600">Customer: <span id="settle-cust-name" class="font-bold text-slate-800"></span></p>
-                    <p class="text-slate-600">Current Outstanding: <span id="settle-cust-balance" class="font-bold text-rose-600"></span></p>
-                </div>
-                <div>
-                    <label class="block font-medium text-slate-700 mb-1">Amount Received (₹) *</label>
-                    <input type="number" id="settle-amount" required min="1" step="any" class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none text-lg font-bold text-emerald-700">
-                </div>
-                <div>
-                    <label class="block font-medium text-slate-700 mb-1">Payment Note / Mode</label>
-                    <input type="text" id="settle-note" placeholder="Cash, GPay, PhonePe receipt..." class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none">
-                </div>
-                <div class="pt-3 flex justify-end gap-2">
-                    <button type="button" onclick="closeSettleModal()" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-lg font-semibold">Cancel</button>
-                    <button type="submit" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-bold shadow">Record Payment</button>
-                </div>
-            </form>
-        </div>
-    </div>
+ <section id="page-khata" class="page">
+  <div class="cards">
+   <div class="metric"><div class="label">TOTAL OUTSTANDING</div><div class="value" id="khata-total">₹0</div></div>
+   <div class="metric"><div class="label">CUSTOMERS</div><div class="value" id="khata-count">0</div></div>
+   <div class="metric"><div class="label">PAYMENTS RECEIVED</div><div class="value" id="khata-received">₹0</div></div>
+   <div class="metric"><div class="label">CUSTOMERS WITH DUE</div><div class="value" id="khata-due-count">0</div></div>
+  </div>
+  <div class="panel"><div class="panel-head"><h2>Customer Ledger / ग्राहक खाते</h2><button class="btn" onclick="openCustomerModal()">＋ Add customer</button></div>
+   <div class="panel-body"><input class="search" id="khata-search" placeholder="Search name or mobile…" oninput="renderKhata()"></div>
+   <div class="tablewrap"><table><thead><tr><th>Name / Phone</th><th>Address</th><th>Outstanding</th><th>Actions</th></tr></thead><tbody id="khata-body"></tbody></table></div>
+  </div>
+  <div class="panel"><div class="panel-head"><h2>Recent Khata Activity</h2></div><div class="tablewrap"><table><thead><tr><th>Date</th><th>Customer</th><th>Type</th><th>Amount</th><th>Note</th></tr></thead><tbody id="khata-activity"></tbody></table></div></div>
+ </section>
 
+ <section id="page-purchase" class="page">
+  <div class="cards">
+   <div class="metric"><div class="label">TODAY'S PURCHASE</div><div class="value" id="purchase-today">₹0</div></div>
+   <div class="metric"><div class="label">PURCHASE ENTRIES</div><div class="value" id="purchase-count">0</div></div>
+   <div class="metric"><div class="label">SUPPLIER DUES</div><div class="value" id="supplier-due">₹0</div></div>
+   <div class="metric"><div class="label">SUPPLIERS</div><div class="value" id="supplier-count">0</div></div>
+  </div>
+  <div class="panel"><div class="panel-head"><h2>Record Purchase / माल खरीदी</h2><button class="btn" onclick="openPurchaseModal()">＋ New purchase</button></div><div class="panel-body"><p class="muted small">Purchase entry adds quantities to inventory and records supplier/cost information. Attach a bill photo for reference; OCR auto-reading is not included in this local-only version.</p></div><div class="tablewrap"><table><thead><tr><th>Date</th><th>Supplier</th><th>Items</th><th>Total</th><th>Payment</th><th>Bill photo</th></tr></thead><tbody id="purchase-body"></tbody></table></div></div>
+  <div class="panel"><div class="panel-head"><h2>Supplier Directory</h2><button class="btn light" onclick="openSupplierModal()">＋ Add supplier</button></div><div class="tablewrap"><table><thead><tr><th>Supplier</th><th>Phone</th><th>Opening due</th><th>Actions</th></tr></thead><tbody id="supplier-body"></tbody></table></div></div>
+ </section>
 
-    <!-- 4. ADD / EDIT PRODUCT MODAL -->
-    <div id="product-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden">
-            <div class="p-4 bg-amber-700 text-white flex justify-between items-center">
-                <h3 class="font-bold text-sm sm:text-base" id="product-modal-title">Add New Product</h3>
-                <button onclick="closeProductModal()" class="text-amber-200 hover:text-white font-bold text-lg">&times;</button>
-            </div>
-            <form onsubmit="saveProduct(event)" class="p-5 space-y-3 text-xs sm:text-sm">
-                <input type="hidden" id="prod-id">
-                <div>
-                    <label class="block font-medium text-slate-700 mb-1">Product Title *</label>
-                    <input type="text" id="prod-name" required placeholder="e.g. Basmati Rice Steam" class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:outline-none">
-                </div>
-                <div class="grid grid-cols-2 gap-3">
-                    <div>
-                        <label class="block font-medium text-slate-700 mb-1">Category *</label>
-                        <select id="prod-category" class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:outline-none font-medium">
-                            <option value="Grains & Rice">Grains & Rice</option>
-                            <option value="Oil & Ghee">Oil & Ghee</option>
-                            <option value="Pulses & Spices">Pulses & Spices</option>
-                            <option value="Packaging & Bags">Packaging & Bags</option>
-                            <option value="General Retail">General Retail</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block font-medium text-slate-700 mb-1">Base Unit *</label>
-                        <select id="prod-unit" class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:outline-none font-medium">
-                            <option value="kg">Kilogram (kg)</option>
-                            <option value="liter">Liter (L)</option>
-                            <option value="packet">Packet</option>
-                            <option value="box">Box</option>
-                            <option value="roll">Roll</option>
-                            <option value="pati">Pati</option>
-                            <option value="piece">Piece</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="grid grid-cols-2 gap-3">
-                    <div>
-                        <label class="block font-medium text-slate-700 mb-1">Price per Unit (₹) *</label>
-                        <input type="number" id="prod-price" required min="0" step="any" class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:outline-none">
-                    </div>
-                    <div>
-                        <label class="block font-medium text-slate-700 mb-1">Current Stock *</label>
-                        <input type="number" id="prod-stock" required min="0" step="any" class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:outline-none">
-                    </div>
-                </div>
-                <div class="pt-3 flex justify-end gap-2">
-                    <button type="button" onclick="closeProductModal()" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-lg font-semibold">Cancel</button>
-                    <button type="submit" class="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-lg font-bold shadow">Save Item</button>
-                </div>
-            </form>
-        </div>
-    </div>
+ <section id="page-reports" class="page">
+  <div class="panel"><div class="panel-head"><h2>Sales & Profit Reports</h2><div class="row"><input id="report-from" type="date" class="search" aria-label="From date" style="width:auto"><input id="report-to" type="date" class="search" aria-label="To date" style="width:auto"><button class="btn sm" onclick="renderReports()">Apply</button></div></div>
+   <div class="cards" style="padding:12px 12px 0"><div class="metric"><div class="label">SALES</div><div class="value" id="r-sales">₹0</div></div><div class="metric"><div class="label">EST. GROSS PROFIT</div><div class="value" id="r-profit">₹0</div></div><div class="metric"><div class="label">COLLECTED</div><div class="value" id="r-paid">₹0</div></div><div class="metric"><div class="label">INVOICES</div><div class="value" id="r-count">0</div></div></div>
+   <div class="panel-body row" style="flex-wrap:wrap"><button class="btn light" onclick="exportSalesCSV()">Export sales CSV</button><button class="btn gray" onclick="exportKhataCSV()">Export Khata CSV</button><button class="btn gray" onclick="exportPurchasesCSV()">Export purchases CSV</button></div>
+   <div class="tablewrap"><table><thead><tr><th>Invoice</th><th>Date</th><th>Customer</th><th>Mode</th><th>Total</th><th>Profit est.</th><th>Action</th></tr></thead><tbody id="reports-body"></tbody></table></div>
+  </div>
+  <div class="notice">Profit is an estimate based on the saved product cost at the time of sale. It does not include rent, salaries, electricity, wastage or other operating expenses.</div>
+ </section>
 
+ <section id="page-settings" class="page">
+  <div class="panel"><div class="panel-head"><h2>Shop Profile & Invoice</h2></div><div class="panel-body stack">
+   <div class="grid2"><div class="field"><label>Shop name</label><input id="set-shop" value="HUMA TRADERS"></div><div class="field"><label>Mobile number</label><input id="set-phone" inputmode="tel" placeholder="Shop contact number"></div></div>
+   <div class="field"><label>Shop address</label><textarea id="set-address" placeholder="Solapur, Maharashtra"></textarea></div>
+   <div class="grid2"><div class="field"><label>Invoice footer</label><input id="set-footer" value="Thank you! Visit again."></div><div class="field"><label>Default low-stock alert quantity</label><input id="set-low" type="number" min="0" value="10"></div></div>
+   <button class="btn" onclick="saveSettings()">Save shop settings</button>
+  </div></div>
+  <div class="panel"><div class="panel-head"><h2>Backup, Restore & Data</h2></div><div class="panel-body stack">
+   <div class="notice">Backup regularly and before clearing browser data or changing phones. A backup contains business records; keep it private.</div>
+   <div class="setting-actions"><button class="btn" onclick="downloadBackup()">⬇ Download JSON backup</button><label class="btn light file-label">⬆ Restore JSON backup<input id="restore-file" type="file" accept=".json,application/json" hidden onchange="restoreBackup(event)"></label><button class="btn gray" onclick="exportProductsCSV()">Products CSV</button><button class="btn gray" onclick="exportSalesCSV()">Sales CSV</button></div>
+   <button class="btn red full" onclick="resetDemoData()">Reset all local app data</button>
+   <p class="small muted">Reset permanently deletes this app's locally saved business records after confirmation. Export a backup first.</p>
+  </div></div>
+  <div class="panel"><div class="panel-head"><h2>About this version</h2></div><div class="panel-body small muted">Professional Pro local edition · No cloud sync · No external analytics. Install/PWA support requires HTTPS hosting. Browser storage is not encrypted by this app. Use a device lock and protect backup files.</div></div>
+ </section>
+ <div class="footer-note">HUMA TRADERS · Professional Pro · Keep a backup of your business data.</div>
+</main>
+<nav class="bottomnav no-print">
+ <button class="active" data-page="pos" onclick="switchPage('pos')"><span>▣</span>Billing</button>
+ <button data-page="inventory" onclick="switchPage('inventory')"><span>▤</span>Stock</button>
+ <button data-page="khata" onclick="switchPage('khata')"><span>▥</span>Khata</button>
+ <button data-page="purchase" onclick="switchPage('purchase')"><span>⇧</span>Purchase</button>
+ <button data-page="settings" onclick="switchPage('settings')"><span>⚙</span>More</button>
+</nav>
 
-    <!-- JAVASCRIPT APP LOGIC -->
-    <script>
-        // --- DEFAULT INITIAL DATA ---
-        const DEFAULT_PRODUCTS = [
-            { id: 101, name: "Basmati Rice Special (Chawal)", category: "Grains & Rice", price: 85, unit: "kg", stock: 120, fastSale: true },
-            { id: 102, name: "Wheat Atta Chakki Fresh (Gehu)", category: "Grains & Rice", price: 42, unit: "kg", stock: 250, fastSale: true },
-            { id: 103, name: "Sunflower Oil Pouch (Tel)", category: "Oil & Ghee", price: 135, unit: "liter", stock: 60, fastSale: true },
-            { id: 104, name: "Pure Cow Ghee Jar", category: "Oil & Ghee", price: 620, unit: "liter", stock: 15, fastSale: false },
-            { id: 105, name: "Toor Dal Premium", category: "Pulses & Spices", price: 150, unit: "kg", stock: 90, fastSale: true },
-            { id: 106, name: "Turmeric Powder Box (Haldi Masala)", category: "Pulses & Spices", price: 60, unit: "box", stock: 45, fastSale: false },
-            { id: 107, name: "Washing Powder & Detergent Surf", category: "General Retail", price: 95, unit: "packet", stock: 80, fastSale: true },
-            { id: 108, name: "Bathing Soap Bar (Sabun)", category: "General Retail", price: 32, unit: "piece", stock: 150, fastSale: true },
-            { id: 109, name: "Sugar (Chini / Shakkar)", category: "Grains & Rice", price: 44, unit: "kg", stock: 200, fastSale: true },
-            { id: 110, name: "Tea Powder (Chai Patti)", category: "Pulses & Spices", price: 140, unit: "packet", stock: 75, fastSale: true },
-            { id: 111, name: "Polythene Carry Bags", category: "Packaging & Bags", price: 210, unit: "roll", stock: 30, fastSale: false },
-            { id: 112, name: "Jute Storage Bags", category: "Packaging & Bags", price: 45, unit: "pati", stock: 100, fastSale: false }
-        ];
+<!-- Modal -->
+<div id="modal" class="modal" role="dialog" aria-modal="true"><div class="modalbox"><div class="modalhead"><h3 id="modal-title">Details</h3><button class="btn sm" style="background:#ffffff20;color:white" onclick="closeModal()">✕</button></div><div id="modal-content" class="modalbody"></div></div></div>
+<div id="print-area"></div>
+<div id="toast" style="position:fixed;left:50%;bottom:85px;transform:translateX(-50%);background:#153d32;color:white;padding:11px 16px;border-radius:12px;box-shadow:0 6px 25px #0003;z-index:80;display:none;max-width:90%;text-align:center;font-weight:700"></div>
 
-        const DEFAULT_CUSTOMERS = [
-            { id: 1, name: "Ramesh Traders", phone: "9823011223", address: "Solapur Market Yard", balance: 3400 },
-            { id: 2, name: "Kiran Supermarket", phone: "9422044556", address: "Old Pune Naka", balance: 1250 },
-            { id: 3, name: "Akash Hotels", phone: "9158099887", address: "Station Road", balance: 0 }
-        ];
-
-        // --- APPLICATION STATE ---
-        let products = JSON.parse(localStorage.getItem("ht_products")) || DEFAULT_PRODUCTS;
-        let customers = JSON.parse(localStorage.getItem("ht_customers")) || DEFAULT_CUSTOMERS;
-        let sales = JSON.parse(localStorage.getItem("ht_sales")) || [];
-        
-        let cart = [];
-        let selectedPayMode = 'CASH';
-        let currentInvoiceForModal = null;
-
-        // --- SYNONYM & ABBREVIATION DICTIONARY FOR SMART SEARCH ---
-        const SEARCH_SYNONYMS = {
-            "atta": ["wheat", "gehu", "flour"],
-            "gehu": ["atta", "wheat", "flour"],
-            "chawal": ["rice", "basmati"],
-            "rice": ["chawal", "basmati"],
-            "tel": ["oil", "sunflower", "ghee"],
-            "oil": ["tel", "sunflower"],
-            "dal": ["pulses", "toor"],
-            "pwd": ["powder", "haldi", "detergent", "surf"],
-            "powder": ["pwd", "haldi", "detergent", "surf"],
-            "detergen": ["detergent", "surf", "powder", "washing"],
-            "sabun": ["soap", "bathing"],
-            "soap": ["sabun"],
-            "chini": ["sugar", "shakkar"],
-            "sugar": ["chini", "shakkar"],
-            "shakkar": ["sugar", "chini"],
-            "chai": ["tea", "patti"],
-            "tea": ["chai", "patti"],
-            "patti": ["tea", "chai"]
-        };
-
-        // --- INITIALIZATION ---
-        window.onload = function() {
-            updateLiveClock();
-            setInterval(updateLiveClock, 1000);
-
-            renderPOSProducts();
-            populateCustomerDropdown();
-            renderCart();
-            renderKhataTable();
-            renderInventoryTable();
-            renderReportsTable();
-        };
-
-        function updateLiveClock() {
-            const now = new Date();
-            document.getElementById('current-date-time').innerText = now.toLocaleString('en-IN', {
-                day: '2-digit', month: 'short', year: 'numeric',
-                hour: '2-digit', minute: '2-digit', second: '2-digit'
-            });
-        }
-
-        function saveDataToStorage() {
-            localStorage.setItem("ht_products", JSON.stringify(products));
-            localStorage.setItem("ht_customers", JSON.stringify(customers));
-            localStorage.setItem("ht_sales", JSON.stringify(sales));
-        }
-
-        function resetDataModal() {
-            if (confirm("Reset all data back to default demo items and clear sales history?")) {
-                localStorage.clear();
-                products = [...DEFAULT_PRODUCTS];
-                customers = [...DEFAULT_CUSTOMERS];
-                sales = [];
-                cart = [];
-                saveDataToStorage();
-                location.reload();
-            }
-        }
-
-        // --- TABS SWITCHING ---
-        function switchTab(tabId) {
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
-            document.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.classList.remove('bg-white', 'text-amber-800', 'font-semibold', 'shadow-sm');
-                btn.classList.add('hover:bg-amber-700/50', 'text-amber-100');
-            });
-
-            document.getElementById(`tab-${tabId}`).classList.remove('hidden');
-            const activeBtn = document.getElementById(`tab-btn-${tabId}`);
-            activeBtn.classList.add('bg-white', 'text-amber-800', 'font-semibold', 'shadow-sm');
-            activeBtn.classList.remove('hover:bg-amber-700/50', 'text-amber-100');
-
-            if (tabId === 'khata') renderKhataTable();
-            if (tabId === 'inventory') renderInventoryTable();
-            if (tabId === 'reports') renderReportsTable();
-        }
-
-
-        // ==================== POS BILLING LOGIC WITH INTELLIGENT SEARCH ====================
-        function renderPOSProducts() {
-            const grid = document.getElementById('pos-product-grid');
-            let rawQuery = document.getElementById('pos-search').value.toLowerCase().trim();
-            const categoryFilter = document.getElementById('pos-category-filter').value;
-
-            let searchTokens = rawQuery ? rawQuery.split(/\s+/) : [];
-            let expandedKeywords = [...searchTokens];
-            searchTokens.forEach(token => {
-                for (let key in SEARCH_SYNONYMS) {
-                    if (key.includes(token) || token.includes(key)) {
-                        expandedKeywords.push(...SEARCH_SYNONYMS[key]);
-                    }
-                }
-            });
-
-            const filtered = products.filter(p => {
-                const nameLower = p.name.toLowerCase();
-                const catLower = p.category.toLowerCase();
-                
-                const matchesCategory = categoryFilter === 'ALL' || p.category === categoryFilter;
-                if (!matchesCategory) return false;
-
-                if (rawQuery === '') return true;
-
-                let isMatch = searchTokens.some(token => nameLower.includes(token) || catLower.includes(token) || String(p.id).includes(token));
-                if (!isMatch && expandedKeywords.length > 0) {
-                    isMatch = expandedKeywords.some(keyword => nameLower.includes(keyword));
-                }
-                return isMatch;
-            });
-
-            filtered.sort((a, b) => {
-                if (a.fastSale && !b.fastSale) return -1;
-                if (!a.fastSale && b.fastSale) return 1;
-                return a.name.localeCompare(b.name);
-            });
-
-            if (filtered.length === 0) {
-                grid.innerHTML = `<div class="col-span-full py-12 text-center text-slate-400 font-medium">No products match your search.</div>`;
-                return;
-            }
-
-            grid.innerHTML = filtered.map(p => `
-                <div onclick="addToCart(${p.id})" class="bg-white p-3 rounded-xl shadow-sm border border-slate-200 hover:border-amber-500 hover:shadow-md transition cursor-pointer flex flex-col justify-between group relative overflow-hidden">
-                    ${p.fastSale ? `<div class="absolute top-0 right-0 bg-amber-500 text-white text-[9px] font-bold px-2 py-0.5 rounded-bl shadow">Fast Sale</div>` : ''}
-                    <div>
-                        <div class="flex justify-between items-start">
-                            <span class="text-[10px] font-semibold bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full">${p.category}</span>
-                            <span class="text-[11px] font-bold ${p.stock <= 10 ? 'text-rose-500' : 'text-slate-400'}">
-                                ${p.stock}${p.unit} left
-                            </span>
-                        </div>
-                        <h4 class="font-bold text-slate-800 text-xs sm:text-sm mt-2 group-hover:text-amber-700 transition line-clamp-
+<script>
+'use strict';
+const DBKEY='huma_traders_pro_v1';
+const CATEGORIES=['Grains & Rice','Atta & Flour','Dal & Pulses','Edible Oil','Sugar & Jaggery','Spices & Masala','Snacks & Biscuits','Soap & Detergent','Home & Cleaning','Packaging & Bags','General Retail','Cold Drinks'];
+const DEMO={
+ version:1,settings:{shop:'HUMA TRADERS',phone:'',address:'Solapur, Maharashtra',footer:'Thank you! Visit again.',lowStock:10},
+ products:[
+ {id:101,name:'Basmati Rice Special (Chawal)',localName:'बासमती चावल',sku:'HT001',category:'Grains & Rice',cost:70,price:85,unit:'kg',stock:120,lowStock:10,active:true},
+ {id:102,name:'Wheat Atta Chakki Fresh (Gehu)',localName:'आटा / गहू',sku:'HT002',category:'Atta & Flour',cost:34,price:42,unit:'kg',stock:250,lowStock:20,active:true},
+ {id:103,name:'Sunflower Oil Pouch (Tel)',localName:'तेल',sku:'HT003',category:'Edible Oil',cost:118,price:135,unit:'liter',stock:60,lowStock:10,active:true},
+ {id:104,name:'Pure Cow Ghee Jar',localName:'घी',sku:'HT004',category:'Edible Oil',cost:550,price:620,unit:'liter',stock:15,lowStock:5,active:true},
+ {id:105,name:'Toor Dal Premium',localName:'तूर दाल',sku:'HT005',category:'Dal & Pulses',cost:125,price:150,unit:'kg',stock:90,lowStock:10,active:true},
+ {id:106,name:'Turmeric Powder (Haldi)',localName:'हळद / हल्दी',sku:'HT006',category:'Spices & Masala',cost:45,price:60,unit:'packet',stock:45,lowStock:10,active:true},
+ {id:107,name:'Washing Powder Detergent',localName:'डिटर्जेंट',sku:'HT007',category:'Soap & Detergent',cost:75,price:95,unit:'packet',stock:80,lowStock:10,active:true},
+ {id:108,name:'Bathing Soap Bar (Sabun)',localName:'साबण',sku:'HT008',category:'Soap & Detergent',cost:24,price:32,unit:'piece',stock:150,lowStock:20,active:true},
+ {id:109,name:'Sugar (Chini / Shakkar)',localName:'साखर / चीनी',sku:'HT009',category:'Sugar & Jaggery',cost:39,price:44,unit:'kg',stock:200,lowStock:20,active:true},
+ {id:110,name:'Tea Powder (Chai Patti)',localName:'चाय पत्ती',sku:'HT010',category:'General Retail',cost:110,price:140,unit:'packet',stock:75,lowStock:10,active:true},
+ {id:111,name:'Polythene Carry Bags',localName:'कैरी बैग',sku:'HT011',category:'Packaging & Bags',cost:180,price:210,unit:'roll',stock:30,lowStock:5,active:true},
+ {id:112,name:'Jute Storage Bags',localName:'गोणी / बोरी',sku:'HT012',category:'Packaging & Bags',cost:35,price:45,unit:'piece',stock:100,lowStock:10,active:true}],
+ customers:[
+ {id:1,name:'Ramesh Traders',phone:'9823011223',address:'Solapur Market Yard',balance:3400},
+ {id:2,name:'Kiran Supermarket',phone:'9422044556',address:'Old Pune Naka',balance:1250},
+ {id:3,name:'Akash Hotels',phone:'9158099887',address:'Station Road',balance:0}],
+ suppliers:[{id:1,name:'Ambika Agency',phone:'',openingDue:0},{id:2,name:'Shri Krishna Agency',phone:'',openingDue:0}],
+ sales:[],purchases:[],khataEntries:[],heldBills:[],expenses:[]
+};
+let db=loadDB(),cart=[],payMode='CASH',lastInvoice=null,installPrompt=null;
+function loadDB(){try{const raw=localStorage.getItem(DBKEY);if(!raw)return structuredCloneSafe(DEMO);const x=JSON.parse(raw);return normalizeDB(x)}catch(e){return structuredCloneSafe(DEMO)}}
+function structuredCloneSafe(x){return JSON.parse(JSON.stringify(x))}
+function normalizeDB(x){const d=structuredCloneSafe(DEMO);return {...d,...x,settings:{...d.settings,...(x.settings||{})},products:Array.isArray(x.products)?x.products:[],customers:Array.isArray(x.customers)?x.customers:[],suppliers:Array.isArray(x.suppliers)?x.suppliers:[],sales:Array.isArray(x.sales)?x.sales:[],purchases:Array.isArray(x.purchases)?x.purchases:[],khataEntries:Array.isArray(x.khataEntries)?x.khataEntries:[],heldBills:Array.isArray(x.heldBills)?x.heldBills:[],expenses:Array.isArray(x.expenses)?x.expenses:[]}}
+function saveDB(){try{localStorage.setItem(DBKEY,JSON.stringify(db));const s=document.getElementById('save-status');if(s)s.textContent='Saved locally ✓';}catch(e){toast('Storage is full. Download a backup and remove large photos.');}}
+function money(n){return '₹'+(Number(n)||0).toLocaleString('en-IN',{minimumFractionDigits:2,maximumFractionDigits:2})}
+function num(v){return Number.isFinite(Number(v))?Number(v):0}
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function id(){return Date.now()+Math.floor(Math.random()*1000)}
+function today(){const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
+function dateText(v){try{return new Date(v).toLocaleString('en-IN',{dateStyle:'medium',timeStyle:'short'})}catch(e){return v||''}}
+function toast(msg){const el=document.getElementById('toast');el.textContent=msg;el.style.display='block';clearTimeout(toast.t);toast.t=setTimeout(()=>el.style.display='none',2500)}
+function switchPage(p){document.querySelectorAll('.page').forEach(e=>e.classList.toggle('active',e.id==='page-'+p));document.querySelectorAll('[data-page]').forEach(e=>e.classList.toggle('active',e.dataset.page===p));if(p==='inventory')renderInventory();if(p==='khata')renderKhata();if(p==='purchase')renderPurchases();if(p==='reports')renderReports();window.scrollTo({top:0,behavior:'smooth'})}
+function updateClock(){document.getElementById('live-date').textContent=new Date().toLocaleString('en-IN',{dateStyle:'medium',timeStyle:'short'})}
+function populateCategories(){const options='<option value="">All categories</option>'+[...new Set([...CATEGORIES,...db.products.map(p=>p.category)])].map(c=>`<option>${esc(c)}</option>`).join('');document.getElementById('pos-category').innerHTML=options}
+function populateCustomers(){const el=document.getElementById('cart-customer');const old=el.value;el.innerHTML='<option value="0">Walk-in Customer</option>'+db.customers.map(c=>`<option value="${c.id}">${esc(c.name)}${c.phone?' · '+esc(c.phone):''}</option>`).join('');if([...el.options].some(o=>o.value===old))el.value=old}
+function searchTerms(q){const synonyms={atta:['gehu','wheat','flour','आटा','गहू'],gehu:['atta','wheat','flour'],chawal:['rice','basmati','चावल'],rice:['chawal','basmati','चावल'],tel:['oil','sunflower','तेल'],oil:['tel','तेल'],dal:['pulses','toor','दाल'],chini:['sugar','shakkar','साखर','चीनी'],sugar:['chini','shakkar','साखर'],sabun:['soap','साबण'],soap:['sabun','साबण'],chai:['tea','patti','चाय'],tea:['chai','patti'],haldi:['turmeric','हळद','हल्दी']};const tokens=q.toLowerCase().split(/\s+/).filter(Boolean);return [...tokens,...tokens.flatMap(t=>synonyms[t]||[])].map(s=>s.toLowerCase())}
+function renderPOSProducts(){const q=document.getElementById('pos-search').value.trim(),cat=document.getElementById('pos-category').value,terms=searchTerms(q);let ps=db.products.filter(p=>p.active!==false&&(!cat||p.category===cat)&&(!q||terms.some(t=>[p.name,p.localName,p.sku,p.category].join(' ').toLowerCase().includes(t))));document.getElementById('product-count').textContent=ps.length+' items';document.getElementById('pos-products').innerHTML=ps.length?ps.map(p=>`<button class="product-card" onclick="addToCart(${p.id})"><div class="between"><span class="pill">${esc(p.category)}</span><span class="stock ${p.stock<=Number(p.lowStock??db.settings.lowStock)?'low':''}">${p.stock} ${esc(p.unit)}</span></div><div class="pname">${esc(p.name)}</div><div class="small muted">${esc(p.localName||p.sku||'')}</div><div class="between"><span class="price">${money(p.price)}</span><span class="small muted">/${esc(p.unit)}</span></div><span class="btn sm full">＋ Add to bill</span></button>`).join(''):'<div class="empty">No products found. Add this item in Stock.</div>'}
+function addToCart(pid){const p=db.products.find(x=>x.id===pid);if(!p)return;const q=num(document.getElementById('quick-unit').value)||1;let line=cart.find(x=>x.productId===pid);if(line)line.qty=round(line.qty+q);else cart.push({productId:p.id,name:p.name,unit:p.unit,price:num(p.price),cost:num(p.cost),qty:q});renderCart()}
+function round(n){return Math.round((Number(n)+Number.EPSILON)*1000)/1000}
+function cartSubtotal(){return cart.reduce((s,x)=>s+x.qty*x.price,0)}
+function calcTotals(){const sub=cartSubtotal(),discount=Math.max(0,Math.min(sub,num(document.getElementById('discount').value))),rate=Math.max(0,Math.min(100,num(document.getElementById('tax-rate').value))),tax=Math.max(0,(sub-discount)*rate/100),total=Math.max(0,sub-discount+tax);return{sub,discount,rate,tax,total}}
+function updateTotals(){const t=calcTotals();document.getElementById('subtotal').textContent=money(t.sub);document.getElementById('tax-amount').textContent=money(t.tax);document.getElementById('discount-amount').textContent='−'+money(t.discount);document.getElementById('grand-total').textContent=money(t.total);document.getElementById('split-fields').classList.toggle('hidden',document.getElementById('payment-mode').value!=='SPLIT')}
+function renderCart(){const el=document.getElementById('cart-items');el.innerHTML=cart.length?cart.map((x,i)=>`<div class="cart-line"><div><b>${esc(x.name)}</b><div class="small muted">${money(x.price)} / ${esc(x.unit)} · line ${money(x.price*x.qty)}</div><div class="qty" style="margin-top:6px"><button onclick="changeQty(${i},-1)">−</button><input aria-label="Quantity" type="number" min="0.001" step="any" value="${x.qty}" onchange="setQty(${i},this.value)"><button onclick="changeQty(${i},1)">＋</button><button class="btn red sm" onclick="removeCartItem(${i})">✕</button></div></div><b>${money(x.price*x.qty)}</b></div>`).join(''):'<div class="empty">Choose a product to start billing.</div>';updateTotals()}
+function changeQty(i,d){if(!cart[i])return;cart[i].qty=round(cart[i].qty+d);if(cart[i].qty<=0)cart.splice(i,1);renderCart()}
+function setQty(i,v){const q=num(v);if(q<=0)cart.splice(i,1);else cart[i].qty=round(q);renderCart()}
+function removeCartItem(i){cart.splice(i,1);renderCart()}
+function clearCart(){if(cart.length&&!confirm('Clear all items from the current bill?'))return;cart=[];document.getElementById('discount').value=0;document.getElementById('tax-rate').value=0;renderCart()}
+function checkout(){if(!cart.length)return toast('Add at least one product first.');const t=calcTotals(),customerId=num(document.getElementById('cart-customer').value),customer=db.customers.find(c=>c.id===customerId);if(document.getElementById('payment-mode').value==='KHATA'&&!customer)return toast('Select a customer to record Khata credit.');for(const x of cart){const p=db.products.find(p=>p.id===x.productId);if(!p||p.stock<x.qty)return toast('Insufficient stock for '+x.name+'. Available: '+(p?p.stock:0));}
+const mode=document.getElementById('payment-mode').value;let cash=0,upi=0,paid=0;if(mode==='CASH'){cash=t.total;paid=t.total}else if(mode==='UPI'){upi=t.total;paid=t.total}else if(mode==='SPLIT'){cash=Math.max(0,num(document.getElementById('split-cash').value));upi=Math.max(0,num(document.getElementById('split-upi').value));paid=Math.min(t.total,cash+upi);if(cash+upi>t.total+.01)return toast('Cash + UPI cannot exceed bill total.');}else{paid=0}
+const sale={id:id(),invoice:'HT-'+today().replaceAll('-','')+'-'+String(db.sales.length+1).padStart(4,'0'),date:new Date().toISOString(),dateKey:today(),customerId:customerId||null,customerName:customer?.name||'Walk-in Customer',customerPhone:customer?.phone||'',items:cart.map(x=>({...x,amount:x.qty*x.price})),subtotal:t.sub,discount:t.discount,taxRate:t.rate,tax:t.tax,total:t.total,mode,cash,upi,paid,due:Math.max(0,t.total-paid),costTotal:cart.reduce((s,x)=>s+x.qty*x.cost,0),status:'Completed',billType:document.getElementById('bill-type').value};
+sale.profit=sale.subtotal-sale.discount-sale.costTotal;db.sales.unshift(sale);for(const x of cart){const p=db.products.find(p=>p.id===x.productId);p.stock=round(p.stock-x.qty)}if(sale.due>0&&customer){customer.balance=round(num(customer.balance)+sale.due);db.khataEntries.unshift({id:id(),date:sale.date,customerId:customer.id,customerName:customer.name,type:'Credit sale',amount:sale.due,note:sale.invoice})}saveDB();lastInvoice=sale;cart=[];document.getElementById('discount').value=0;document.getElementById('tax-rate').value=0;document.getElementById('split-cash').value=0;document.getElementById('split-upi').value=0;renderAll();showReceipt(sale);toast('Sale saved successfully.')}
+function openModal(title,html){document.getElementById('modal-title').textContent=title;document.getElementById('modal-content').innerHTML=html;document.getElementById('modal').classList.add('show')}
+function closeModal(){document.getElementById('modal').classList.remove('show')}
+document.getElementById('modal').addEventListener('click',e=>{if(e.target.id==='modal')closeModal()});
+function openQuickSale(){switchPage('pos');document.getElementById('pos-search').focus()}
+function openProductModal(pid=null){const p=pid?db.products.find(x=>x.id===pid):null;openModal(p?'Edit product':'Add product',`<form id="product-form" class="stack"><input type="hidden" name="id" value="${p?.id||''}"><div class="field"><label>Product name *</label><input name="name" required value="${esc(p?.name||'')}" placeholder="e.g. Toor Dal Premium"></div><div class="field"><label>Hindi / Marathi name or aliases</label><input name="localName" value="${esc(p?.localName||'')}" placeholder="तूर दाल / तूर डाळ"></div><div class="grid2"><div class="field"><label>SKU / Barcode</label><input name="sku" value="${esc(p?.sku||'')}" placeholder="HT001"></div><div class="field"><label>Category</label><input name="category" list="category-list" required value="${esc(p?.category||'General Retail')}"><datalist id="category-list">${CATEGORIES.map(c=>`<option value="${esc(c)}">`).join('')}</datalist></div></div><div class="grid2"><div class="field"><label>Purchase cost (₹) *</label><input name="cost" type="number" min="0" step=".01" required value="${p?.cost??0}"></div><div class="field"><label>Selling price (₹) *</label><input name="price" type="number" min="0" step=".01" required value="${p?.price??0}"></div></div><div class="grid2"><div class="field"><label>Unit</label><select name="unit">${['kg','gram','liter','ml','packet','box','bag','patti','roll','piece','dozen'].map(u=>`<option ${p?.unit===u?'selected':''}>${u}</option>`).join('')}</select></div><div class="field"><label>Current stock</label><input name="stock" type="number" min="0" step=".001" required value="${p?.stock??0}"></div></div><div class="grid2"><div class="field"><label>Low stock alert</label><input name="lowStock" type="number" min="0" step=".001" value="${p?.lowStock??db.settings.lowStock}"></div><div class="field"><label>Product status</label><select name="active"><option value="true" ${p?.active!==false?'selected':''}>Active</option><option value="false" ${p?.active===false?'selected':''}>Inactive</option></select></div></div><div class="modalfoot"><button type="button" class="btn gray" onclick="closeModal()">Cancel</button><button class="btn">Save product</button></div></form>`);document.getElementById('product-form').onsubmit=e=>{e.preventDefault();const f=new FormData(e.target),pid=num(f.get('id'));const item={id:pid||id(),name:String(f.get('name')).trim(),localName:String(f.get('localName')).trim(),sku:String(f.get('sku')).trim(),category:String(f.get('category')).trim(),cost:num(f.get('cost')),price:num(f.get('price')),unit:String(f.get('unit')),stock:num(f.get('stock')),lowStock:num(f.get('lowStock')),active:f.get('active')==='true'};if(!item.name)return;if(pid)db.products=db.products.map(x=>x.id===pid?item:x);else db.products.push(item);saveDB();closeModal();renderAll();toast('Product saved.')}}
+function deleteProduct(pid){const p=db.products.find(x=>x.id===pid);if(!p)return;if(!confirm(`Delete "${p.name}"? Past invoices remain in sales history.`))return;db.products=db.products.filter(x=>x.id!==pid);saveDB();renderAll();toast('Product deleted.')}
+function renderInventory(){const q=(document.getElementById('inventory-search')?.value||'').toLowerCase();const ps=db.products.filter(p=>[p.name,p.localName,p.sku,p.category].join(' ').toLowerCase().includes(q));document.getElementById('inventory-body').innerHTML=ps.length?ps.map(p=>`<tr><td><b>${esc(p.name)}</b><div class="small muted">${esc(p.localName||p.sku||'')}</div>${p.active===false?'<span class="status due">Inactive</span>':''}</td><td>${esc(p.category)}</td><td>${money(p.cost)}<div class="small">Sell: <b>${money(p.price)}</b></div></td><td><span class="status ${p.stock<=Number(p.lowStock??db.settings.lowStock)?'low':''}">${p.stock}</span></td><td>${esc(p.unit)}</td><td><button class="btn light sm" onclick="openProductModal(${p.id})">Edit</button><button class="btn red sm" onclick="deleteProduct(${p.id})">Delete</button></td></tr>`).join(''):'<tr><td colspan="6" class="empty">No products yet.</td></tr>';document.getElementById('inv-count').textContent=db.products.length;document.getElementById('inv-value').textContent=money(db.products.reduce((s,p)=>s+p.stock*p.cost,0));document.getElementById('inv-low').textContent=db.products.filter(p=>p.stock<=Number(p.lowStock??db.settings.lowStock)).length;document.getElementById('inv-cats').textContent=new Set(db.products.map(p=>p.category)).size}
+function openCustomerModal(cid=null){const c=cid?db.customers.find(x=>x.id===cid):null;openModal(c?'Edit customer':'Add customer',`<form id="customer-form" class="stack"><input type="hidden" name="id" value="${c?.id||''}"><div class="field"><label>Customer name *</label><input name="name" required value="${esc(c?.name||'')}"></div><div class="grid2"><div class="field"><label>Mobile number</label><input name="phone" inputmode="tel" value="${esc(c?.phone||'')}"></div><div class="field"><label>Opening udhaar (₹)</label><input name="balance" type="number" min="0" step=".01" value="${c?.balance??0}" ${c?'disabled':''}></div></div><div class="field"><label>Address</label><textarea name="address">${esc(c?.address||'')}</textarea></div><div class="modalfoot"><button type="button" class="btn gray" onclick="closeModal()">Cancel</button><button class="btn">Save customer</button></div></form>`);document.getElementById('customer-form').onsubmit=e=>{e.preventDefault();const f=new FormData(e.target),pid=num(f.get('id'));if(pid){const c=db.customers.find(x=>x.id===pid);c.name=String(f.get('name')).trim();c.phone=String(f.get('phone')).trim();c.address=String(f.get('address')).trim()}else{const c={id:id(),name:String(f.get('name')).trim(),phone:String(f.get('phone')).trim(),address:String(f.get('address')).trim(),balance:num(f.get('balance'))};db.customers.push(c);if(c.balance)db.khataEntries.unshift({id:id(),date:new Date().toISOString(),customerId:c.id,customerName:c.name,type:'Opening balance',amount:c.balance,note:'Opening balance'});}saveDB();closeModal();renderAll();toast('Customer saved.')}}
+function receivePayment(cid){const c=db.customers.find(x=>x.id===cid);if(!c)return;openModal('Receive Khata Payment',`<form id="payment-form" class="stack"><p>Customer: <b>${esc(c.name)}</b><br>Current balance: <b class="danger-text">${money(c.balance)}</b></p><div class="field"><label>Amount received (₹) *</label><input name="amount" type="number" min=".01" max="${Math.max(0,c.balance)}" step=".01" required></div><div class="field"><label>Payment mode / note</label><input name="note" value="Cash" placeholder="Cash, UPI, PhonePe"></div><div class="modalfoot"><button type="button" class="btn gray" onclick="closeModal()">Cancel</button><button class="btn">Record payment</button></div></form>`);document.getElementById('payment-form').onsubmit=e=>{e.preventDefault();const f=new FormData(e.target),amount=num(f.get('amount'));if(amount<=0||amount>c.balance)return toast('Enter a valid amount not exceeding outstanding.');c.balance=round(c.balance-amount);db.khataEntries.unshift({id:id(),date:new Date().toISOString(),customerId:c.id,customerName:c.name,type:'Payment received',amount,note:String(f.get('note'))});saveDB();closeModal();renderAll();toast('Payment recorded.')}}
+function renderKhata(){const q=(document.getElementById('khata-search')?.value||'').toLowerCase(),cs=db.customers.filter(c=>[c.name,c.phone,c.address].join(' ').toLowerCase().includes(q));document.getElementById('khata-body').innerHTML=cs.length?cs.map(c=>`<tr><td><b>${esc(c.name)}</b><div class="small muted">${esc(c.phone||'No phone')}</div></td><td>${esc(c.address||'—')}</td><td><b class="${c.balance>0?'danger-text':''}">${money(c.balance)}</b></td><td><button class="btn light sm" onclick="receivePayment(${c.id})">Receive</button><button class="btn gray sm" onclick="openCustomerModal(${c.id})">Edit</button><button class="btn blue sm" onclick="shareKhata(${c.id})">Share</button></td></tr>`).join(''):'<tr><td colspan="4" class="empty">No customers found.</td></tr>';document.getElementById('khata-total').textContent=money(db.customers.reduce((s,c)=>s+num(c.balance),0));document.getElementById('khata-count').textContent=db.customers.length;document.getElementById('khata-due-count').textContent=db.customers.filter(c=>c.balance>0).length;document.getElementById('khata-received').textContent=money(db.khataEntries.filter(x=>x.type==='Payment received').reduce((s,x)=>s+x.amount,0));document.getElementById('khata-activity').innerHTML=db.khataEntries.slice(0,30).map(x=>`<tr><td>${dateText(x.date)}</td><td>${esc(x.customerName)}</td><td>${esc(x.type)}</td><td>${money(x.amount)}</td><td>${esc(x.note||'')}</td></tr>`).join('')||'<tr><td colspan="5" class="empty">No ledger activity yet.</td></tr>'}
+function shareKhata(cid){const c=db.customers.find(x=>x.id===cid);if(!c)return;const msg=`HUMA TRADERS\\nKhata statement for ${c.name}\\nOutstanding balance: ${money(c.balance)}\\nPlease contact the shop for details.`;if(navigator.share)navigator.share({text:msg}).catch(()=>{});else{downloadText('khata-'+c.id+'.txt',msg);toast('Statement downloaded.')}}
+function openSupplierModal(sid=null){const s=sid?db.suppliers.find(x=>x.id===sid):null;openModal(s?'Edit supplier':'Add supplier',`<form id="supplier-form" class="stack"><input type="hidden" name="id" value="${s?.id||''}"><div class="field"><label>Supplier name *</label><input name="name" required value="${esc(s?.name||'')}"></div><div class="grid2"><div class="field"><label>Mobile</label><input name="phone" value="${esc(s?.phone||'')}"></div><div class="field"><label>Opening due (₹)</label><input name="openingDue" type="number" min="0" step=".01" value="${s?.openingDue??0}"></div></div><div class="modalfoot"><button type="button" class="btn gray" onclick="closeModal()">Cancel</button><button class="btn">Save supplier</button></div></form>`);document.getElementById('supplier-form').onsubmit=e=>{e.preventDefault();const f=new FormData(e.target),pid=num(f.get('id')),obj={id:pid||id(),name:String(f.get('name')).trim(),phone:String(f.get('phone')).trim(),openingDue:num(f.get('openingDue'))};if(pid)db.suppliers=db.suppliers.map(x=>x.id===pid?obj:x);else db.suppliers.push(obj);saveDB();closeModal();renderAll();toast('Supplier saved.')}}
+function openPurchaseModal(){if(!db.products.length)return toast('Add products before recording a purchase.');openModal('Record Purchase',`<form id="purchase-form" class="stack"><div class="grid2"><div class="field"><label>Supplier *</label><select name="supplierId" required>${db.suppliers.map(s=>`<option value="${s.id}">${esc(s.name)}</option>`).join('')}<option value="0">Other / cash supplier</option></select></div><div class="field"><label>Bill number</label><input name="billNo" placeholder="Supplier bill no."></div></div><div class="field"><label>Product *</label><select name="productId" required>${db.products.map(p=>`<option value="${p.id}">${esc(p.name)} · ${esc(p.unit)}</option>`).join('')}</select></div><div class="grid2"><div class="field"><label>Quantity received *</label><input name="qty" type="number" min=".001" step=".001" required value="1"></div><div class="field"><label>Purchase rate per unit (₹) *</label><input name="rate" type="number" min="0" step=".01" required></div></div><div class="grid2"><div class="field"><label>Amount paid (₹)</label><input name="paid" type="number" min="0" step=".01" value="0"></div><div class="field"><label>Bill photo (optional)</label><input name="photo" type="file" accept="image/*" capture="environment"></div></div><div class="field"><label>Notes</label><input name="note" placeholder="Batch, expiry, damage etc."></div><div class="notice">Image size is reduced before saving. Large or numerous photos can fill browser storage; backup frequently.</div><div class="modalfoot"><button type="button" class="btn gray" onclick="closeModal()">Cancel</button><button class="btn">Save purchase & update stock</button></div></form>`);const form=document.getElementById('purchase-form');form.querySelector('[name=productId]').onchange=()=>{const p=db.products.find(x=>x.id===num(form.productId.value));form.rate.value=p?.cost??0};form.querySelector('[name=productId]').dispatchEvent(new Event('change'));form.onsubmit=async e=>{e.preventDefault();const f=new FormData(form),p=db.products.find(x=>x.id===num(f.get('productId'))),s=db.suppliers.find(x=>x.id===num(f.get('supplierId'))),qty=num(f.get('qty')),rate=num(f.get('rate')),total=qty*rate,paid=Math.min(total,Math.max(0,num(f.get('paid'))));if(!p||qty<=0)return toast('Check product and quantity.');let photo='';const file=form.querySelector('[name=photo]').files[0];if(file){try{photo=await resizeImage(file)}catch(err){toast('Could not process photo. Saving without photo.')}}p.stock=round(p.stock+qty);p.cost=rate;const purchase={id:id(),date:new Date().toISOString(),dateKey:today(),supplierId:s?.id||null,supplierName:s?.name||'Cash / Other supplier',billNo:String(f.get('billNo')),items:[{productId:p.id,name:p.name,qty,unit:p.unit,rate,total}],total,paid,due:total-paid,note:String(f.get('note')),photo};db.purchases.unshift(purchase);if(s&&purchase.due>0)s.openingDue=round(num(s.openingDue)+purchase.due);saveDB();closeModal();renderAll();toast('Purchase saved and stock updated.')}}
+function resizeImage(file){return new Promise((resolve,reject)=>{const reader=new FileReader();reader.onerror=reject;reader.onload=()=>{const img=new Image();img.onerror=reject;img.onload=()=>{const max=1000,scale=Math.min(1,max/Math.max(img.width,img.height)),canvas=document.createElement('canvas');canvas.width=Math.round(img.width*scale);canvas.height=Math.round(img.height*scale);canvas.getContext('2d').drawImage(img,0,0,canvas.width,canvas.height);resolve(canvas.toDataURL('image/jpeg',.65))};img.src=reader.result};reader.readAsDataURL(file)})}
+function renderPurchases(){const due=db.suppliers.reduce((s,x)=>s+num(x.openingDue),0);document.getElementById('purchase-today').textContent=money(db.purchases.filter(p=>p.dateKey===today()).reduce((s,p)=>s+p.total,0));document.getElementById('purchase-count').textContent=db.purchases.length;document.getElementById('supplier-due').textContent=money(due);document.getElementById('supplier-count').textContent=db.suppliers.length;document.getElementById('purchase-body').innerHTML=db.purchases.map(p=>`<tr><td>${dateText(p.date)}</td><td>${esc(p.supplierName)}<div class="small muted">${esc(p.billNo||'')}</div></td><td>${p.items.map(i=>esc(i.name)+' × '+i.qty).join('<br>')}</td><td><b>${money(p.total)}</b><div class="small muted">Due ${money(p.due)}</div></td><td>${money(p.paid)}</td><td>${p.photo?`<button class="btn light sm" onclick="viewPurchasePhoto(${p.id})">View photo</button>`:'—'}</td></tr>`).join('')||'<tr><td colspan="6" class="empty">No purchase entries yet.</td></tr>';document.getElementById('supplier-body').innerHTML=db.suppliers.map(s=>`<tr><td><b>${esc(s.name)}</b></td><td>${esc(s.phone||'—')}</td><td>${money(s.openingDue)}</td><td><button class="btn light sm" onclick="openSupplierModal(${s.id})">Edit</button><button class="btn gray sm" onclick="paySupplier(${s.id})">Record payment</button></td></tr>`).join('')||'<tr><td colspan="4" class="empty">No suppliers yet.</td></tr>'}
+function viewPurchasePhoto(pid){const p=db.purchases.find(x=>x.id===pid);if(!p?.photo)return;openModal('Supplier bill photo',`<img src="${p.photo}" alt="Supplier bill" style="width:100%;height:auto;border-radius:10px"><p class="small muted">${esc(p.supplierName)} · ${esc(p.billNo||'No bill number')}</p>`)}
+function paySupplier(sid){const s=db.suppliers.find(x=>x.id===sid);if(!s)return;openModal('Supplier payment',`<form id="supplier-pay" class="stack"><p>${esc(s.name)} · Recorded due: <b>${money(s.openingDue)}</b></p><div class="field"><label>Payment amount</label><input name="amount" type="number" min=".01" max="${Math.max(.01,s.openingDue)}" step=".01" required></div><div class="modalfoot"><button type="button" class="btn gray" onclick="closeModal()">Cancel</button><button class="btn">Record</button></div></form>`);document.getElementById('supplier-pay').onsubmit=e=>{e.preventDefault();const a=num(new FormData(e.target).get('amount'));if(a<=0||a>s.openingDue)return toast('Enter a valid amount.');s.openingDue=round(s.openingDue-a);db.khataEntries.unshift({id:id(),date:new Date().toISOString(),customerId:null,customerName:s.name,type:'Supplier payment',amount:a,note:'Supplier payment'});saveDB();closeModal();renderAll();toast('Supplier payment recorded.')}}
+function reportSales(){const from=document.getElementById('report-from').value,to=document.getElementById('report-to').value;return db.sales.filter(s=>(!from||s.dateKey>=from)&&(!to||s.dateKey<=to))}
+function renderReports(){const ss=reportSales();document.getElementById('r-sales').textContent=money(ss.reduce((s,x)=>s+x.total,0));document.getElementById('r-profit').textContent=money(ss.reduce((s,x)=>s+num(x.profit),0));document.getElementById('r-paid').textContent=money(ss.reduce((s,x)=>s+x.paid,0));document.getElementById('r-count').textContent=ss.length;document.getElementById('reports-body').innerHTML=ss.map(s=>`<tr><td><b>${esc(s.invoice)}</b></td><td>${dateText(s.date)}</td><td>${esc(s.customerName)}</td><td>${esc(s.mode)}</td><td><b>${money(s.total)}</b></td><td>${money(s.profit)}</td><td><button class="btn light sm" onclick="showReceiptById(${s.id})">View / print</button></td></tr>`).join('')||'<tr><td colspan="7" class="empty">No sales in selected date range.</td></tr>'}
+function showReceiptById(sid){const s=db.sales.find(x=>x.id===sid);if(s)showReceipt(s)}
+function showReceipt(s){const shop=db.settings;const rows=s.items.map(i=>`<tr><td>${esc(i.name)}<br><small>${i.qty} ${esc(i.unit)} × ${money(i.price)}</small></td><td class="right">${money(i.qty*i.price)}</td></tr>`).join('');const area=document.getElementById('print-area');area.innerHTML=`<div class="receipt" style="width:300px;max-width:100%;margin:12px auto;background:white;padding:12px;border:1px solid #ddd;font:11px/1.35 monospace;color:#111"><h2>${esc(shop.shop)}</h2><p style="text-align:center">${esc(shop.address||'Solapur, Maharashtra')}</p>${shop.phone?`<p style="text-align:center">Mob: ${esc(shop.phone)}</p>`:''}<hr><p>Invoice: ${esc(s.invoice)}</p><p>Date: ${esc(dateText(s.date))}</p><p>Customer: ${esc(s.customerName)}</p>${s.customerPhone?`<p>Phone: ${esc(s.customerPhone)}</p>`:''}<hr><table><thead><tr><th>Item</th><th class="right">Amount</th></tr></thead><tbody>${rows}</tbody></table><hr><div class="summaryline"><span>Subtotal</span><b>${money(s.subtotal)}</b></div><div class="summaryline"><span>Discount</span><b>-${money(s.discount)}</b></div><div class="summaryline"><span>Tax (${s.taxRate}%)</span><b>${money(s.tax)}</b></div><div class="summaryline grand"><span>TOTAL</span><span>${money(s.total)}</span></div><p>Payment: ${esc(s.mode)} · Paid: ${money(s.paid)}</p>${s.due>0?`<p>Balance due: ${money(s.due)}</p>`:''}<hr><p style="text-align:center">${esc(shop.footer||'Thank you!')}</p><p style="text-align:center">HUMA TRADERS · Solapur</p></div><div class="no-print row" style="justify-content:center;margin:12px"><button class="btn" onclick="window.print()">Print receipt</button><button class="btn gray" onclick="closeReceiptView()">Close</button></div>`;lastInvoice=s;openModal('Invoice Preview & Print',`<div id="receipt-modal-content"></div>`);document.getElementById('receipt-modal-content').appendChild(area);area.style.display='block';}
+function closeReceiptView(){const area=document.getElementById('print-area');area.style.display='none';document.body.appendChild(area);closeModal()}
+function updateDashboard(){const ss=db.sales.filter(s=>s.dateKey===today());document.getElementById('m-sales').textContent=money(ss.reduce((s,x)=>s+x.total,0));document.getElementById('m-collected').textContent=money(ss.reduce((s,x)=>s+x.paid,0));document.getElementById('m-credit').textContent=money(db.customers.reduce((s,c)=>s+num(c.balance),0));document.getElementById('m-low').textContent=db.products.filter(p=>p.stock<=Number(p.lowStock??db.settings.lowStock)).length}
+function renderAll(){populateCategories();populateCustomers();renderPOSProducts();renderCart();renderInventory();renderKhata();renderPurchases();renderReports();updateDashboard();loadSettingsForm()}
+function loadSettingsForm(){const s=db.settings;for(const [id,key] of [['set-shop','shop'],['set-phone','phone'],['set-address','address'],['set-footer','footer'],['set-low','lowStock']]){const el=document.getElementById(id);if(el&&document.activeElement!==el)el.value=s[key]??''}}
+function saveSettings(){db.settings={...db.settings,shop:document.getElementById('set-shop').value.trim()||'HUMA TRADERS',phone:document.getElementById('set-phone').value.trim(),address:document.getElementById('set-address').value.trim(),footer:document.getElementById('set-footer').value.trim(),lowStock:num(document.getElementById('set-low').value)};saveDB();renderAll();toast('Shop settings saved.')}
+function openBackup(){switchPage('settings');document.getElementById('page-settings').scrollIntoView({behavior:'smooth'})}
+function downloadText(name,text,type='text/plain;charset=utf-8'){const blob=new Blob([text],{type}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)}
+function downloadBackup(){const data={...db,backupCreatedAt:new Date().toISOString(),app:'HUMA TRADERS Professional Pro'};downloadText('huma-traders-backup-'+today()+'.json',JSON.stringify(data,null,2),'application/json');toast('Backup download started.')}
+function restoreBackup(e){const file=e.target.files[0];if(!file)return;const r=new FileReader();r.onload=()=>{try{const parsed=JSON.parse(r.result);if(!parsed||!Array.isArray(parsed.products)||!Array.isArray(parsed.customers)||!Array.isArray(parsed.sales))throw new Error('This does not look like a HUMA TRADERS backup.');if(!confirm('Restore backup and replace current local records? Download a backup of current data first if needed.'))return;db=normalizeDB(parsed);saveDB();cart=[];renderAll();toast('Backup restored.')}catch(err){alert('Restore failed: '+err.message)}finally{e.target.value=''}};r.readAsText(file)}
+function resetDemoData(){if(!confirm('PERMANENTLY erase all HUMA TRADERS local records and reload demo data? Download a backup first.'))return;if(!confirm('Last confirmation: delete sales, customers, products, purchases and settings from this browser?'))return;localStorage.removeItem(DBKEY);db=structuredCloneSafe(DEMO);cart=[];saveDB();renderAll();switchPage('pos');toast('Local data reset to demo data.')}
+function csvCell(v){return '"'+String(v??'').replace(/"/g,'""')+'"'}
+function exportCSV(name,headers,rows){const csv=[headers,...rows].map(r=>r.map(csvCell).join(',')).join('\r\n');downloadText(name,'\ufeff'+csv,'text/csv;charset=utf-8')}
+function exportProductsCSV(){exportCSV('huma-products-'+today()+'.csv',['id','name','localName','sku','category','cost','price','unit','stock','lowStock','active'],db.products.map(p=>[p.id,p.name,p.localName,p.sku,p.category,p.cost,p.price,p.unit,p.stock,p.lowStock,p.active]))}
+function exportSalesCSV(){exportCSV('huma-sales-'+today()+'.csv',['invoice','date','customer','phone','mode','subtotal','discount','tax','total','paid','due','profit'],db.sales.map(s=>[s.invoice,s.date,s.customerName,s.customerPhone,s.mode,s.subtotal,s.discount,s.tax,s.total,s.paid,s.due,s.profit]))}
+function exportKhataCSV(){exportCSV('huma-khata-'+today()+'.csv',['customer','phone','address','balance'],db.customers.map(c=>[c.name,c.phone,c.address,c.balance]))}
+function exportPurchasesCSV(){exportCSV('huma-purchases-'+today()+'.csv',['date','supplier','billNo','items','total','paid','due','note'],db.purchases.map(p=>[p.date,p.supplierName,p.billNo,p.items.map(i=>`${i.name} x ${i.qty}`).join('; '),p.total,p.paid,p.due,p.note]))}
+function parseCSV(text){const rows=[];let row=[],cell='',q=false;for(let i=0;i<text.length;i++){const c=text[i];if(c==='"'&&q&&text[i+1]==='"'){cell+='"';i++}else if(c==='"')q=!q;else if(c===','&&!q){row.push(cell);cell=''}else if((c==='\n'||c==='\r')&&!q){if(c==='\r'&&text[i+1]==='\n')i++;row.push(cell);if(row.some(x=>x.trim()))rows.push(row);row=[];cell=''}else cell+=c}row.push(cell);if(row.some(x=>x.trim()))rows.push(row);return rows}
+function importProductsCSV(e){const file=e.target.files[0];if(!file)return;const r=new FileReader();r.onload=()=>{try{const rows=parseCSV(r.result);if(rows.length<2)throw new Error('CSV has no product rows.');const heads=rows.shift().map(x=>x.trim().toLowerCase()),idx=k=>heads.indexOf(k);if(idx('name')<0||idx('price')<0)throw new Error('CSV must include at least name and price columns. Export products CSV first to see the format.');let added=0;for(const row of rows){const get=k=>idx(k)>=0?row[idx(k)]||'':'';const name=get('name').trim();if(!name)continue;const pid=num(get('id'))||id(),existing=db.products.find(p=>p.id===pid||p.sku&&p.sku===get('sku'));const p={id:existing?.id||pid,name,localName:get('localname'),sku:get('sku'),category:get('category')||'General Retail',cost:num(get('cost')),price:num(get('price')),unit:get('unit')||'piece',stock:num(get('stock')),lowStock:num(get('lowstock'))||db.settings.lowStock,active:get('active')!=='false'};if(existing)Object.assign(existing,p);else db.products.push(p);added++}saveDB();renderAll();toast(added+' products imported.')}catch(err){alert('CSV import failed: '+err.message)}finally{e.target.value=''}};r.readAsText(file)}
+function holdBill(){if(!cart.length)return toast('Cart is empty.');db.heldBills.unshift({id:id(),date:new Date().toISOString(),cart:structuredCloneSafe(cart),customerId:num(document.getElementById('cart-customer').value),discount:num(document.getElementById('discount').value),taxRate:num(document.getElementById('tax-rate').value),mode:document.getElementById('payment-mode').value});saveDB();cart=[];renderCart();toast('Bill held. Start a new bill.')}
+function showHeldBills(){if(!db.heldBills.length)return toast('No held bills.');openModal('Resume held bill',db.heldBills.map(b=>`<div class="panel-body" style="border-bottom:1px solid var(--line)"><b>${dateText(b.date)}</b><div class="small muted">${b.cart.map(x=>esc(x.name)+' × '+x.qty).join(', ')}</div><div class="between" style="margin-top:8px"><b>${money(b.cart.reduce((s,x)=>s+x.price*x.qty,0))}</b><div><button class="btn sm" onclick="resumeHeld(${b.id})">Resume</button><button class="btn red sm" onclick="deleteHeld(${b.id})">Delete</button></div></div></div>`).join(''))}
+function resumeHeld(bid){const b=db.heldBills.find(x=>x.id===bid);if(!b)return;cart=b.cart;document.getElementById('cart-customer').value=String(b.customerId||0);document.getElementById('discount').value=b.discount;document.getElementById('tax-rate').value=b.taxRate;document.getElementById('payment-mode').value=b.mode;db.heldBills=db.heldBills.filter(x=>x.id!==bid);saveDB();closeModal();switchPage('pos');renderCart();toast('Held bill resumed.')}
+function deleteHeld(bid){db.heldBills=db.heldBills.filter(x=>x.id!==bid);saveDB();showHeldBills()}
+document.getElementById('csv-import').addEventListener('change',()=>{});
+document.getElementById('restore-file').addEventListener('change',()=>{});
+document.getElementById('report-from').value=today();document.getElementById('report-to').value=today();
+document.getElementById('payment-mode').addEventListener('change',updateTotals);
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();installPrompt=e;document.getElementById('install-btn').classList.remove('hidden')});
+document.getElementById('install-btn').addEventListener('click',async()=>{if(!installPrompt)return;installPrompt.prompt();await installPrompt.userChoice;installPrompt=null;document.getElementById('install-btn').classList.add('hidden')});
+window.addEventListener('online',()=>toast('Back online'));window.addEventListener('offline',()=>toast('Offline mode'));
+function init(){updateClock();setInterval(updateClock,30000);renderAll();if('serviceWorker' in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('./sw.js').catch(()=>{});}
+init();
+</script>
+</body>
+</html>
