@@ -7,79 +7,60 @@ const APP_FILES = [
   "./manifest.json"
 ];
 
-// Install: app files cache karein
-self.addEventListener("install", (event) => {
+self.addEventListener("install", event => {
   event.waitUntil(
     caches.open(CACHE_NAME)
-      .then((cache) => cache.addAll(APP_FILES))
+      .then(cache => cache.addAll(APP_FILES))
       .then(() => self.skipWaiting())
   );
 });
 
-// Activate: purana app cache clean karein
-self.addEventListener("activate", (event) => {
+self.addEventListener("activate", event => {
   event.waitUntil(
-    caches.keys().then((keys) =>
+    caches.keys().then(keys =>
       Promise.all(
         keys
-          .filter((key) => key !== CACHE_NAME)
-          .map((key) => caches.delete(key))
+          .filter(key => key.startsWith("huma-traders-") &&
+                         key !== CACHE_NAME)
+          .map(key => caches.delete(key))
       )
     ).then(() => self.clients.claim())
   );
 });
 
-// Network available ho to latest page, offline ho to cached page
-self.addEventListener("fetch", (event) => {
+self.addEventListener("fetch", event => {
   const request = event.request;
+
+  if (request.method !== "GET") return;
+
   const url = new URL(request.url);
 
-  // Sirf same-origin GET requests cache karein
-  if (
-    request.method !== "GET" ||
-    url.origin !== self.location.origin
-  ) {
-    return;
-  }
+  // Keep external OCR/CDN requests network-based.
+  if (url.origin !== self.location.origin) return;
 
-  // Navigation request
-  if (request.mode === "navigate") {
-    event.respondWith(
-      fetch(request)
-        .then((response) => {
-          if (response.ok) {
-            const copy = response.clone();
-            caches.open(CACHE_NAME).then((cache) =>
-              cache.put("./index.html", copy)
-            );
-          }
-          return response;
-        })
-        .catch(async () => {
-          return (
-            await caches.match(request) ||
-            await caches.match("./index.html") ||
-            Response.error()
-          );
-        })
-    );
-    return;
-  }
-
-  // Baaki local files
   event.respondWith(
-    caches.match(request).then((cached) => {
-      if (cached) return cached;
-
-      return fetch(request).then((response) => {
-        if (response.ok) {
+    fetch(request)
+      .then(response => {
+        if (response.ok && response.type === "basic") {
           const copy = response.clone();
-          caches.open(CACHE_NAME).then((cache) =>
-            cache.put(request, copy)
-          );
+          caches.open(CACHE_NAME)
+            .then(cache => cache.put(request, copy));
         }
         return response;
-      });
-    })
+      })
+      .catch(async () => {
+        const cached = await caches.match(request);
+        if (cached) return cached;
+
+        if (request.mode === "navigate") {
+          return (await caches.match("./index.html")) ||
+            new Response("HUMA TRADERS is offline. Please reconnect.", {
+              status: 503,
+              headers: { "Content-Type": "text/plain; charset=utf-8" }
+            });
+        }
+
+        return new Response("Offline", { status: 503 });
+      })
   );
 });
