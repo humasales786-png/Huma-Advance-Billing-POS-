@@ -1,47 +1,65 @@
+Const CACHE_NAME = "huma-traders-pro-v1";
 
-const CACHE_NAME = "huma-traders-pos-v1";
-const FILES = ["./", "./index.html", "./manifest.json", "./icon-1.png"];
+const APP_FILES = [
+  "./",
+  "./index.html",
+  "./manifest.json"
+];
 
 self.addEventListener("install", event => {
   event.waitUntil(
     caches.open(CACHE_NAME)
-      .then(cache => cache.addAll(FILES))
-      .catch(() => Promise.resolve())
+      .then(cache => cache.addAll(APP_FILES))
+      .then(() => self.skipWaiting())
   );
-  self.skipWaiting();
 });
 
 self.addEventListener("activate", event => {
   event.waitUntil(
     caches.keys().then(keys =>
       Promise.all(
-        keys.filter(key => key !== CACHE_NAME)
+        keys
+          .filter(key => key.startsWith("huma-traders-") &&
+                         key !== CACHE_NAME)
           .map(key => caches.delete(key))
       )
-    )
+    ).then(() => self.clients.claim())
   );
-  self.clients.claim();
 });
 
 self.addEventListener("fetch", event => {
-  if (event.request.method !== "GET") return;
+  const request = event.request;
 
-  const url = new URL(event.request.url);
+  if (request.method !== "GET") return;
+
+  const url = new URL(request.url);
+
+  // Keep external OCR/CDN requests network-based.
   if (url.origin !== self.location.origin) return;
 
   event.respondWith(
-    caches.match(event.request).then(cached => {
-      if (cached) return cached;
-
-      return fetch(event.request).then(response => {
-        if (response && response.ok) {
+    fetch(request)
+      .then(response => {
+        if (response.ok && response.type === "basic") {
           const copy = response.clone();
-          caches.open(CACHE_NAME).then(cache =>
-            cache.put(event.request, copy)
-          );
+          caches.open(CACHE_NAME)
+            .then(cache => cache.put(request, copy));
         }
         return response;
-      }).catch(() => caches.match("./index.html"));
-    })
+      })
+      .catch(async () => {
+        const cached = await caches.match(request);
+        if (cached) return cached;
+
+        if (request.mode === "navigate") {
+          return (await caches.match("./index.html")) ||
+            new Response("HUMA TRADERS is offline. Please reconnect.", {
+              status: 503,
+              headers: { "Content-Type": "text/plain; charset=utf-8" }
+            });
+        }
+
+        return new Response("Offline", { status: 503 });
+      })
   );
 });
