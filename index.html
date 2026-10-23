@@ -176,7 +176,7 @@ main{max-width:1250px;margin:auto;padding:13px 12px 100px}.tabs{display:flex;gap
    <div class="grid2"><div class="field"><label>Invoice footer</label><input id="set-footer" value="Thank you! Visit again."></div><div class="field"><label>Default low-stock alert quantity</label><input id="set-low" type="number" min="0" value="10"></div></div>
    <div class="field"><label>UPI ID for bill QR (optional)</label><input id="set-upi" placeholder="yourname@upi" autocomplete="off"><small class="muted">QR will appear on the receipt if you enter your UPI ID.</small></div>
    <div class="grid2"><div class="field"><label>Thermal printer paper width</label><select id="set-paper-width"><option value="58">58 mm Bluetooth thermal</option><option value="80">80 mm Bluetooth thermal</option><option value="a4">A4 / normal printer</option></select></div><div class="field"><label>Barcode input mode</label><select id="set-barcode-mode"><option value="keyboard">Bluetooth/USB scanner (keyboard mode)</option><option value="camera">Phone camera scanner</option></select></div></div>
-   <div class="notice">Bluetooth thermal printer: pair it in Android Settings → Bluetooth first. Tap Print receipt and choose the paired printer in Android's print/share workflow or the printer app. A normal web page cannot universally pair/control every generic Bluetooth printer directly.</div>
+   <div class="panel" style="border:1px solid var(--line);margin:4px 0 12px"><div class="panel-head"><h2>Bluetooth Thermal Printer</h2><span id="printer-status-pill" class="badge">Not connected</span></div><div class="panel-body stack"><p class="small muted">58mm/80mm receipt setup. Tap Search & Connect to look for a Bluetooth LE printer. Many portable 58mm printers use Bluetooth Classic (SPP); Android Chrome cannot directly control those from a normal HTML page. In that case, pair in Android Bluetooth settings and print using the printer's companion app or Android print service.</p><div class="row" style="flex-wrap:wrap"><button type="button" class="btn" onclick="searchAndConnectPrinter()">⌕ Search & Connect</button><button type="button" class="btn light" onclick="disconnectPrinter()">Disconnect</button><button type="button" class="btn gold" onclick="printPrinterTest()">Print test receipt</button></div><div id="printer-status-detail" class="notice" aria-live="polite">Ready. Choose Search & Connect, or pair the printer from Android Settings → Bluetooth.</div><div class="small muted">Note: a browser connection does not guarantee raw ESC/POS printing. Direct printing requires a supported BLE GATT printer/service or a compatible Android printing app.</div></div></div>
    <button class="btn" onclick="saveSettings()">Save shop settings</button>
   </div></div>
   <div class="panel"><div class="panel-head"><h2>Backup, Restore & Data</h2></div><div class="panel-body stack">
@@ -415,6 +415,48 @@ function showReceipt(s){
  lastInvoice=s;openModal('Professional Bill Preview',`<div id="receipt-modal-content"></div>`);document.getElementById('receipt-modal-content').appendChild(area);area.style.display='block';
 } 
 function downloadReceiptText(){if(!lastInvoice)return;const s=lastInvoice,shop=db.settings||{};const lines=[shop.shop||'HUMA TRADERS',shop.address||'Solapur, Maharashtra',shop.phone?'Mob: '+shop.phone:'','================================',`Bill: ${s.invoice}`,`Date: ${dateText(s.date)}`,`Customer: ${s.customerName||'Walk-in Customer'}`,'--------------------------------','ITEM              QTY   RATE   AMOUNT',...(s.items||[]).map(i=>`${i.name}  ${i.qty} ${i.unit||''}  ${money(i.price)}  ${money(i.qty*i.price)}`),'--------------------------------',`Subtotal: ${money(s.subtotal)}`,`Discount: ${money(s.discount)}`,`Tax: ${money(s.tax)}`,`TOTAL: ${money(s.total)}`,`Payment: ${s.mode}`,`Paid: ${money(s.paid)}`,...(s.due>0?[`Balance due: ${money(s.due)}`]:[]),'================================',shop.footer||'Thank you! Visit again.'].filter(Boolean).join('\n');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([lines],{type:'text/plain;charset=utf-8'}));a.download=`${s.invoice||'huma-bill'}.txt`;a.click();URL.revokeObjectURL(a.href)}
+// Bluetooth printer discovery: Web Bluetooth supports BLE/GATT only, not generic Bluetooth Classic/SPP.
+let humaBlePrinter = null;
+function setPrinterStatus(title, detail, good=false){
+ const pill=document.getElementById('printer-status-pill'),box=document.getElementById('printer-status-detail');
+ if(pill){pill.textContent=title;pill.style.background=good?'#dff6e9':'#fff3d7';pill.style.color=good?'#075c40':'#73530a';}
+ if(box)box.textContent=detail;
+}
+async function searchAndConnectPrinter(){
+ if(!('bluetooth' in navigator) || !navigator.bluetooth || !navigator.bluetooth.requestDevice){
+  setPrinterStatus('Browser unsupported','Web Bluetooth is not available in this browser/context. Pair the printer in Android Settings → Bluetooth, then use its printing app or Android print service.');
+  alert('Is browser/file mein Bluetooth device search available nahi hai. App ko HTTPS website par Chrome mein kholein. Agar printer Bluetooth Classic/SPP hai, direct HTML connection supported nahi hota; printer app se print karein.'); return;
+ }
+ try{
+  setPrinterStatus('Searching…','Bluetooth device chooser khul raha hai. Apne printer ko select karein.');
+  // acceptAllDevices lets the user see compatible BLE devices; optionalServices is needed for GATT access.
+  const device=await navigator.bluetooth.requestDevice({acceptAllDevices:true, optionalServices:['battery_service','device_information']});
+  humaBlePrinter=device;
+  device.addEventListener('gattserverdisconnected',()=>setPrinterStatus('Disconnected','Printer ka BLE connection disconnect ho gaya. Search & Connect dobara dabayein.'));
+  if(!device.gatt){setPrinterStatus('Selected, no GATT','Device selected but does not expose BLE GATT. It may be a Bluetooth Classic printer.');alert('Printer select hua, lekin BLE GATT service nahi mili. Yeh printer shayad Bluetooth Classic/Spp hai. Android Settings mein pair karke manufacturer printer app se print karein.');return;}
+  setPrinterStatus('Connecting…','Selected: '+(device.name||'Bluetooth device')+'. Connection establish ho raha hai.');
+  await device.gatt.connect();
+  const label=device.name||'Bluetooth printer';
+  setPrinterStatus('BLE connected',label+' se BLE connection bana. Dhyan rahe: direct receipt print tabhi chalega jab printer ka compatible print service/protocol available ho.',true);
+  try{localStorage.setItem('humaPrinterName',label)}catch(e){}
+  toast('Bluetooth BLE connected: '+label);
+ }catch(err){
+  const msg=err&&err.name==='NotFoundError'?'Device select nahi hua. Printer ON rakhein aur dobara try karein.':err&&err.name==='SecurityError'?'Bluetooth ke liye HTTPS aur user permission zaroori hai.':'Connection failed: '+(err&&err.message?err.message:'Unknown error');
+  setPrinterStatus('Not connected',msg); if(err&&err.name!=='NotFoundError') alert(msg);
+ }
+}
+function disconnectPrinter(){try{if(humaBlePrinter&&humaBlePrinter.gatt&&humaBlePrinter.gatt.connected)humaBlePrinter.gatt.disconnect();humaBlePrinter=null;setPrinterStatus('Disconnected','Browser BLE connection close kar diya. Android Bluetooth pairing alag se reh sakti hai.');toast('Printer connection closed.')}catch(e){setPrinterStatus('Disconnected','Browser connection close ho gaya.')}}
+function printPrinterTest(){
+ const area=document.getElementById('print-area');
+ const previous=area.innerHTML,wasDisplay=area.style.display;
+ const width=String(db.settings.paperWidth||'58'),mm=width==='80'?80:58;
+ area.innerHTML=`<div class="receipt pro-receipt" style="--receipt-width:${mm-4}mm;width:${mm-4}mm;max-width:${mm-4}mm;margin:0 auto;padding:2mm;border:0;box-shadow:none"><div class="receipt-brand"><h2>HUMA TRADERS</h2><div class="receipt-tagline">PRINTER TEST</div></div><div class="receipt-rule">------------------------------</div><div class="receipt-meta"><span>Status</span><b>TEST PRINT</b></div><div class="receipt-meta"><span>Paper</span><b>${mm} mm</b></div><div class="receipt-meta"><span>Date</span><b>${new Date().toLocaleString('en-IN')}</b></div><div class="receipt-rule">------------------------------</div><div class="receipt-thanks">If this receipt prints clearly, paper setup is OK.</div><div class="receipt-end">HUMA TRADERS Professional Pro</div></div>`;
+ area.style.display='block';
+ let style=document.getElementById('thermal-print-style');if(!style){style=document.createElement('style');style.id='thermal-print-style';document.head.appendChild(style)}
+ style.textContent=`@media print{@page{size:${mm}mm auto;margin:0}html,body{width:${mm}mm!important;min-width:${mm}mm!important;margin:0!important;padding:0!important;background:#fff!important}body *{visibility:hidden!important}#print-area,#print-area *{visibility:visible!important}#print-area{position:absolute!important;left:0!important;top:0!important;width:${mm}mm!important;min-width:${mm}mm!important;margin:0!important;padding:0!important;background:#fff!important}.pro-receipt{width:${mm-4}mm!important;max-width:${mm-4}mm!important;margin:0!important;padding:2mm!important;border:0!important;box-shadow:none!important}.receipt-actions{display:none!important}}`;
+ try{window.print()}catch(e){alert('Print dialog could not open. Open this app in Chrome and choose Print.')}finally{setTimeout(()=>{area.innerHTML=previous;area.style.display=wasDisplay||'none'},800)}
+}
+
 function printThermalReceipt(){
  const width=String(db.settings.paperWidth||'58');let style=document.getElementById('thermal-print-style');
  if(!style){style=document.createElement('style');style.id='thermal-print-style';document.head.appendChild(style)}
@@ -427,6 +469,8 @@ function updateDashboard(){const ss=db.sales.filter(s=>s.dateKey===today());cons
 function renderRecentTransactions(){const el=document.getElementById('recent-transactions');if(!el)return;const sales=db.sales.slice(0,4);el.innerHTML=sales.length?sales.map(s=>`<div class="recent-item"><div><div class="recent-title">${esc(s.customerName||'Walk-in Customer')}</div><div class="recent-meta">${esc(s.invoice)} · ${dateText(s.date)} · ${esc(s.mode||'CASH')}</div><div class="recent-meta">${(s.items||[]).length} item(s) · ${s.due>0?'<span class="danger-text">Due '+money(s.due)+'</span>':'<span class="status">Paid</span>'}</div></div><div><div class="recent-amount">${money(s.total)}</div><div class="recent-actions"><button class="btn light sm" onclick="showReceiptById(${s.id})">View bill</button></div></div></div>`).join(''):'<div class="empty">No transactions yet. Complete a sale and it will appear here.</div>'}
 function renderAll(){populateCategories();populateCustomers();renderPOSProducts();renderCart();renderInventory();renderKhata();renderPurchases();renderReports();renderRecentTransactions();updateDashboard();loadSettingsForm()}
 function loadSettingsForm(){const s=db.settings;for(const [id,key] of [['set-shop','shop'],['set-phone','phone'],['set-address','address'],['set-footer','footer'],['set-upi','upiId'],['set-low','lowStock'],['set-paper-width','paperWidth'],['set-barcode-mode','barcodeMode']]){const el=document.getElementById(id);if(el&&document.activeElement!==el)el.value=s[key]??''}}
+function restorePrinterLabel(){let n='';try{n=localStorage.getItem('humaPrinterName')||''}catch(e){}if(n)setPrinterStatus('Previously selected',n+' was selected before. For security, tap Search & Connect to reconnect each session.');}
+
 function saveSettings(){db.settings={...db.settings,shop:document.getElementById('set-shop').value.trim()||'HUMA TRADERS',phone:document.getElementById('set-phone').value.trim(),address:document.getElementById('set-address').value.trim(),footer:document.getElementById('set-footer').value.trim(),upiId:document.getElementById('set-upi')?.value.trim()||'',lowStock:num(document.getElementById('set-low').value),paperWidth:document.getElementById('set-paper-width').value,barcodeMode:document.getElementById('set-barcode-mode').value};saveDB();renderAll();toast('Shop settings saved.')}
 function openBackup(){switchPage('settings');document.getElementById('page-settings').scrollIntoView({behavior:'smooth'})}
 function downloadText(name,text,type='text/plain;charset=utf-8'){const blob=new Blob([text],{type}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)}
@@ -454,7 +498,7 @@ document.getElementById('install-btn').addEventListener('click',async()=>{if(!in
 window.addEventListener('online',()=>toast('Back online'));window.addEventListener('offline',()=>toast('Offline mode'));
 // Hide the branded splash after the app has had a moment to render.
 (function(){const splash=document.getElementById('huma-startup-splash');if(!splash)return;const hide=()=>{splash.classList.add('hide');setTimeout(()=>splash.remove(),450)};if(document.readyState==='complete')setTimeout(hide,1100);else window.addEventListener('load',()=>setTimeout(hide,700),{once:true});setTimeout(hide,3500);})();
-function init(){try{updateClock();setInterval(updateClock,30000);renderAll();if('serviceWorker' in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('./sw.js').catch(()=>{});}catch(err){console.error('HUMA TRADERS init failed:',err);const el=document.getElementById('toast');if(el){el.textContent='App start error: '+err.message;el.style.display='block'}}}
+function init(){try{updateClock();setInterval(updateClock,30000);renderAll();restorePrinterLabel();if('serviceWorker' in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('./sw.js').catch(()=>{});}catch(err){console.error('HUMA TRADERS init failed:',err);const el=document.getElementById('toast');if(el){el.textContent='App start error: '+err.message;el.style.display='block'}}}
 window.addEventListener('error',e=>{console.error('HUMA TRADERS error:',e.error||e.message);});
 init();
 </script>
