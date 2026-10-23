@@ -1,27 +1,30 @@
-
 {
-  "id": "/Huma-Advance-Billing-POS/",
+  "id": "/Huma-Advance-Billing-POS-/",
   "name": "HUMA TRADERS Billing POS",
   "short_name": "HUMA POS",
-  "description": "Professional Grocery Billing, POS, Inventory and Sales Management for HUMA TRADERS, Solapur.",
-  "start_url": "/Huma-Advance-Billing-POS/",
-  "scope": "/Huma-Advance-Billing-POS/",
+  "description": "HUMA TRADERS Solapur - Professional Grocery Billing, POS, Inventory and Sales Management App",
+  "start_url": "/Huma-Advance-Billing-POS-/",
+  "scope": "/Huma-Advance-Billing-POS-/",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#ffffff",
   "theme_color": "#06634f",
   "lang": "en-IN",
-  "categories": ["business", "productivity", "shopping"],
+  "categories": [
+    "business",
+    "productivity",
+    "shopping"
+  ],
   "prefer_related_applications": false,
   "icons": [
     {
-      "src": "./icon-1.png",
+      "src": "/Huma-Advance-Billing-POS-/icon-1.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "./icon-1.png",
+      "src": "/Huma-Advance-Billing-POS-/icon-1.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
