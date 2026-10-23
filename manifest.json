@@ -1,14 +1,27 @@
 
 {
-  "id": "./",
+  "id": "/",
   "name": "HUMA TRADERS Professional Pro",
-  "short_name": "HUMA PRO",
-  "description": "Grocery Billing, POS, Inventory, Purchase and Khata Management",
-  "lang": "en-IN",
-  "start_url": "./index.html",
-  "scope": "./",
+  "short_name": "HUMA TRADERS",
+  "description": "Professional Grocery Billing and POS",
+  "start_url": "/",
+  "scope": "/",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#f2f6f4",
-  "theme_color": "#124638"
+  "background_color": "#ffffff",
+  "theme_color": "#06634f",
+  "icons": [
+    {
+      "src": "/icon-1.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-1.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
 }
