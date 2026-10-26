@@ -1,24 +1,25 @@
+
 {
   "id": "./",
-  "name": "HUMA TRADERS Complete ERP",
-  "short_name": "HUMA ERP",
-  "description": "HUMA TRADERS local-device billing, purchase, stock, khata and reports",
+  "name": "HUMA TRADERS Professional ERP",
+  "short_name": "HUMA TRADERS",
+  "description": "HUMA TRADERS wholesale grocery billing and ERP",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#064e3b",
   "theme_color": "#064e3b",
-  "lang": "mr",
+  "lang": "en-IN",
   "icons": [
     {
-      "src": "./icon-192.png",
+      "src": "./icon-192-2.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "./icon-512.png",
+      "src": "./icon-512-1.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
