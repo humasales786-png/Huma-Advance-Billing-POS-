@@ -1,16 +1,15 @@
-
 {
   "id": "./",
-  "name": "HUMA TRADERS Professional ERP",
+  "name": "HUMA TRADERS - Smart Billing & ERP",
   "short_name": "HUMA TRADERS",
-  "description": "HUMA TRADERS wholesale grocery billing and ERP",
+  "description": "HUMA TRADERS wholesale grocery billing, inventory, customer khata and 58mm receipt printing app.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#064e3b",
   "theme_color": "#064e3b",
-  "lang": "en-IN",
+  "lang": "hi-IN",
   "icons": [
     {
       "src": "./icon-192-2.png",
