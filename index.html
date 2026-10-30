@@ -9,8 +9,8 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <title>HUMA TRADERS | Professional Pro POS</title>
 <link rel="manifest" href="./manifest.json">
-<link rel="icon" type="image/png" href="./icon-1.png">
-<link rel="apple-touch-icon" href="./icon-1.png">
+<link rel="icon" type="image/png" href="./assets/icon-192.png">
+<link rel="apple-touch-icon" href="./assets/icon-192.png">
 <meta name="application-name" content="HUMA TRADERS">
 <meta name="apple-mobile-web-app-title" content="HUMA TRADERS">
 <style>
@@ -53,7 +53,7 @@ main{max-width:1250px;margin:auto;padding:13px 12px 100px}.tabs{display:flex;gap
 </style>
 </head>
 <body>
-<div id="huma-startup-splash" aria-label="HUMA TRADERS loading screen"><img src="./splash-1.png" alt="HUMA TRADERS splash screen" onerror="this.parentElement.style.display='none'"></div>
+<div id="huma-startup-splash" aria-label="HUMA TRADERS loading screen"><img src="./assets/splash.png" alt="HUMA TRADERS splash screen" onerror="this.parentElement.style.display='none'"></div>
 
 <header class="top no-print">
  <div class="toprow">
@@ -84,7 +84,7 @@ main{max-width:1250px;margin:auto;padding:13px 12px 100px}.tabs{display:flex;gap
    <div class="panel">
     <div class="panel-head"><h2>Find Products / उत्पाद खोजें</h2><span class="tag" id="product-count">0 items</span></div>
     <div class="panel-body stack">
-     <input class="search" id="pos-search" placeholder="एक अक्षर लिखें: p / पो / मटन / Mutton…" oninput="renderPOSProducts()" onkeydown="handleProductSearchKey(event)" autocomplete="off"><div id="product-suggestions" class="search-suggestions" role="listbox"></div>
+     <input class="search" id="pos-search" placeholder="2–3 अक्षर लिखें: bas, rice, atta…" oninput="renderPOSProducts()" onkeydown="handleProductSearchKey(event)" autocomplete="off"><div id="product-suggestions" class="search-suggestions" role="listbox"></div>
      <div class="row code-entry"><input class="search" id="barcode-entry" placeholder="Scan barcode / type SKU, then Enter" autocomplete="off"><button class="btn light" onclick="addByCode()">Find code</button><button class="btn gray" onclick="openBarcodeScanner()">📷 Scan & Add</button></div><div class="small muted">Tip: camera scan detected code ko automatically bill mein add karega. Bluetooth scanner paired ho to code scan karke Enter dabayein.</div>
      <div class="grid2">
       <div class="field"><label>Category</label><select id="pos-category" onchange="renderPOSProducts()"><option value="">All categories</option></select></div>
@@ -176,7 +176,7 @@ main{max-width:1250px;margin:auto;padding:13px 12px 100px}.tabs{display:flex;gap
    <div class="grid2"><div class="field"><label>Invoice footer</label><input id="set-footer" value="Thank you! Visit again."></div><div class="field"><label>Default low-stock alert quantity</label><input id="set-low" type="number" min="0" value="10"></div></div>
    <div class="field"><label>UPI ID for bill QR (optional)</label><input id="set-upi" placeholder="yourname@upi" autocomplete="off"><small class="muted">QR will appear on the receipt if you enter your UPI ID.</small></div>
    <div class="grid2"><div class="field"><label>Thermal printer paper width</label><select id="set-paper-width"><option value="58">58 mm Bluetooth thermal</option><option value="80">80 mm Bluetooth thermal</option><option value="a4">A4 / normal printer</option></select></div><div class="field"><label>Barcode input mode</label><select id="set-barcode-mode"><option value="keyboard">Bluetooth/USB scanner (keyboard mode)</option><option value="camera">Phone camera scanner</option></select></div></div>
-   <div class="panel" style="border:1px solid var(--line);margin:4px 0 12px"><div class="panel-head"><h2>Bluetooth Thermal Printer</h2><span id="printer-status-pill" class="badge">Not connected</span></div><div class="panel-body stack"><p class="small muted">58mm/80mm receipt setup. Tap Search & Connect to look for a Bluetooth LE printer. Many portable 58mm printers use Bluetooth Classic (SPP); Android Chrome cannot directly control those from a normal HTML page. In that case, pair in Android Bluetooth settings and print using the printer's companion app or Android print service.</p><div class="row" style="flex-wrap:wrap"><button type="button" class="btn" onclick="searchAndConnectPrinter()">⌕ Search & Connect</button><button type="button" class="btn light" onclick="disconnectPrinter()">Disconnect</button><button type="button" class="btn gold" onclick="printPrinterTest()">Print test receipt</button></div><div id="printer-status-detail" class="notice" aria-live="polite">Ready. Choose Search & Connect, or pair the printer from Android Settings → Bluetooth.</div><div class="small muted">Note: a browser connection does not guarantee raw ESC/POS printing. Direct printing requires a supported BLE GATT printer/service or a compatible Android printing app.</div></div></div>
+   <div class="panel" style="border:1px solid var(--line);margin:4px 0 12px"><div class="panel-head"><h2>Bluetooth Thermal Printer</h2><span id="printer-status-pill" class="badge">Not connected</span></div><div class="panel-body stack"><p class="small muted">58mm/80mm receipt setup. BLE printers need a writable GATT characteristic. BluPrints/Sampann Classic Bluetooth SPP: direct printing is available in the HUMA TRADERS Android APK. In browser PWA, SPP is not supported.</p><div class="row" style="flex-wrap:wrap"><button type="button" class="btn" onclick="searchAndConnectPrinter()">⌕ Search & Connect</button><button type="button" class="btn light" onclick="disconnectPrinter()">Disconnect</button><button type="button" class="btn gold" onclick="printPrinterTest()">Print test receipt</button></div><div id="printer-status-detail" class="notice" aria-live="polite">Ready. Choose Search & Connect, or pair the printer from Android Settings → Bluetooth.</div><div class="small muted">APK: pair BPrinter050014 in Android Bluetooth settings, then tap Search & Connect. Browser PWA: BLE only; Classic SPP needs the Android APK. No Android System Print/PDF fallback.</div></div></div>
    <button class="btn" onclick="saveSettings()">Save shop settings</button>
   </div></div>
   <div class="panel"><div class="panel-head"><h2>Backup, Restore & Data</h2></div><div class="panel-body stack">
@@ -246,7 +246,7 @@ function switchPage(p){document.querySelectorAll('.page').forEach(e=>e.classList
 function updateClock(){document.getElementById('live-date').textContent=new Date().toLocaleString('en-IN',{dateStyle:'medium',timeStyle:'short'})}
 function populateCategories(){const options='<option value="">All categories</option>'+[...new Set([...CATEGORIES,...db.products.map(p=>p.category)])].map(c=>`<option>${esc(c)}</option>`).join('');document.getElementById('pos-category').innerHTML=options}
 function populateCustomers(){const el=document.getElementById('cart-customer');const old=el.value;el.innerHTML='<option value="0">Walk-in Customer</option>'+db.customers.map(c=>`<option value="${c.id}">${esc(c.name)}${c.phone?' · '+esc(c.phone):''}</option>`).join('');if([...el.options].some(o=>o.value===old))el.value=old}
-function searchTerms(q){const synonyms={atta:['gehu','wheat','flour','आटा','गहू'],gehu:['atta','wheat','flour'],chawal:['rice','basmati','चावल'],rice:['chawal','basmati','चावल'],tel:['oil','sunflower','तेल'],oil:['tel','तेल'],dal:['pulses','toor','दाल'],chini:['sugar','shakkar','साखर','चीनी'],sugar:['chini','shakkar','साखर'],sabun:['soap','साबण'],soap:['sabun','साबण'],chai:['tea','patti','चाय'],tea:['chai','patti'],haldi:['turmeric','हळद','हल्दी'],mutton:['मटन','मटण','matan','matana'],matana:['mutton','मटन','मटण'],chicken:['चिकन','कोंबडी'],masala:['मसाला','मसाले'],pav:['पाव','पावभाजी'],poha:['पोहा','पोहे'],paneer:['पनीर'],muttonmasala:['mutton masala','मटन मसाला','मटण मसाला']};const tokens=q.toLowerCase().split(/\s+/).filter(Boolean);return [...tokens,...tokens.flatMap(t=>synonyms[t]||[])].map(s=>s.toLowerCase())}
+function searchTerms(q){const synonyms={atta:['gehu','wheat','flour','आटा','गहू'],gehu:['atta','wheat','flour'],chawal:['rice','basmati','चावल'],rice:['chawal','basmati','चावल'],tel:['oil','sunflower','तेल'],oil:['tel','तेल'],dal:['pulses','toor','दाल'],chini:['sugar','shakkar','साखर','चीनी'],sugar:['chini','shakkar','साखर'],sabun:['soap','साबण'],soap:['sabun','साबण'],chai:['tea','patti','चाय'],tea:['chai','patti'],haldi:['turmeric','हळद','हल्दी']};const tokens=q.toLowerCase().split(/\s+/).filter(Boolean);return [...tokens,...tokens.flatMap(t=>synonyms[t]||[])].map(s=>s.toLowerCase())}
 function addByCode(){const el=document.getElementById('barcode-entry');const code=(el.value||'').trim().toLowerCase();if(!code)return toast('Scan or enter an item code first.');const p=db.products.find(x=>String(x.sku||'').trim().toLowerCase()===code||String(x.barcode||'').trim().toLowerCase()===code||(x.variants||[]).some(v=>String(v.barcode||v.sku||'').trim().toLowerCase()===code));if(!p){const unknown=el.value.trim();toast('Barcode saved product se match nahi hua. Product ka barcode Stock mein save karein.');if(confirm('Barcode/SKU not found. Kya isi code se naya product banana hai?')){openProductModal();setTimeout(()=>{const f=document.getElementById('product-form');if(f){f.elements.sku.value=unknown;f.elements.name.focus()}},50)}else{document.getElementById('pos-search').value=unknown;renderPOSProducts()}el.focus();return}const v=(p.variants||[]).find(v=>String(v.barcode||v.sku||'').trim().toLowerCase()===code);if(v)addToCart(p.id,v.id);else chooseProduct(p.id);el.value='';el.focus()}
 document.addEventListener('DOMContentLoaded',()=>{const el=document.getElementById('barcode-entry');if(el)el.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();addByCode()}});const m=document.getElementById('manual-barcode');if(m)m.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();useManualBarcode()}})});
 let barcodeStream=null,barcodeScanLoop=false;
@@ -279,31 +279,9 @@ async function openBarcodeScanner(){
 function stopBarcodeCamera(){barcodeScanLoop=false;try{window.humaZXingReader?.reset()}catch(e){}if(barcodeStream){barcodeStream.getTracks().forEach(t=>t.stop());barcodeStream=null}const v=document.getElementById('barcode-video');if(v)v.srcObject=null}
 function closeBarcodeScanner(){stopBarcodeCamera();document.getElementById('scanner-modal').classList.remove('show')}
 function useManualBarcode(){const code=document.getElementById('manual-barcode').value.trim();if(!code)return toast('Enter a barcode or SKU.');document.getElementById('barcode-entry').value=code;closeBarcodeScanner();addByCode()}
-// Multilingual search helpers: preserve saved product data; only derive searchable text.
-function romanizeIndic(value){
- const text=String(value||'').toLocaleLowerCase();
- const consonants={'क':'k','ख':'kh','ग':'g','घ':'gh','ङ':'n','च':'ch','छ':'chh','ज':'j','झ':'jh','ञ':'ny','ट':'t','ठ':'th','ड':'d','ढ':'dh','ण':'n','त':'t','थ':'th','द':'d','ध':'dh','न':'n','प':'p','फ':'ph','ब':'b','भ':'bh','म':'m','य':'y','र':'r','ल':'l','व':'v','श':'sh','ष':'sh','स':'s','ह':'h','क्ष':'ksh','त्र':'tr','ज्ञ':'gy','ळ':'l','क़':'q','ख़':'kh','ज़':'z','फ़':'f','ड़':'d','ढ़':'dh'};
- const vowels={'अ':'a','आ':'aa','इ':'i','ई':'ee','उ':'u','ऊ':'oo','ऋ':'ri','ए':'e','ऐ':'ai','ओ':'o','औ':'au','ऑ':'o','ा':'a','ि':'i','ी':'i','ु':'u','ू':'u','ृ':'ri','े':'e','ै':'ai','ो':'o','ौ':'au','ॉ':'o','ं':'n','ँ':'n','ः':'h','्':''};
- let out='';
- for(let i=0;i<text.length;i++){
-  const ch=text[i];
-  if(consonants[ch]){out+=consonants[ch];if(text[i+1]==='्'){i++;}else if(!vowels[text[i+1]])out+='a';}
-  else if(vowels[ch])out+=vowels[ch];
-  else if(/[a-z0-9]/i.test(ch))out+=ch;else out+=' ';
- }
- return out.replace(/aa/g,'a').replace(/ee/g,'i').replace(/oo/g,'u').replace(/[^a-z0-9]+/g,' ').trim();
-}
-function normalizeSearchText(value){return String(value||'').toLocaleLowerCase().normalize('NFKD').replace(/[\u0300-\u036f]/g,'').replace(/[^\p{L}\p{N}]+/gu,' ').trim()}
-function productHaystack(p){const original=[p.name,p.localName,p.sku,p.barcode,p.category,p.brand,...(p.searchAliases||[]),...(p.aliases||[])].filter(Boolean).join(' ');return (normalizeSearchText(original)+' '+normalizeSearchText(romanizeIndic(original))).trim()}
-function findProducts(q,cat=''){
- const raw=normalizeSearchText(q);const all=db.products.filter(p=>p.active!==false&&(!cat||p.category===cat));if(!raw)return all;
- const expanded=searchTerms(raw).flatMap(t=>[normalizeSearchText(t),normalizeSearchText(romanizeIndic(t))]).filter(Boolean);
- const words=[...new Set([...raw.split(/\s+/),...expanded.flatMap(t=>t.split(/\s+/))].filter(Boolean))];
- // Any matching token is enough for short/one-letter searches; multiword queries also match any term,
- // so typing "mutton masala" finds records with either local-language spelling or transliteration.
- return all.filter(p=>{const h=productHaystack(p);return words.some(w=>h.includes(w)||searchTerms(w).some(t=>h.includes(normalizeSearchText(t))||h.includes(normalizeSearchText(romanizeIndic(t)))))});
-}
-function renderProductSuggestions(ps,q){const box=document.getElementById('product-suggestions');if(!box)return;const show=q.trim().length>=1;if(!show){box.classList.remove('show');box.innerHTML='';return}const hits=ps;box.innerHTML=hits.map(p=>{const has=(p.variants||[]).length>0;const stock=has?p.variants.reduce((n,v)=>n+num(v.stock),0):num(p.stock);return `<button type="button" class="suggestion-item" onclick="chooseProduct('${String(p.id)}')"><span><span class="suggestion-name">${esc(p.name)}</span><div class="suggestion-meta">${esc(p.localName||p.brand||p.category||'Saved item')} · ${has?p.variants.length+' sizes':'Stock '+stock+' '+esc(p.unit)}</div></span><span style="text-align:right"><b>${has?'Choose size':money(p.price)}</b><div class="small muted">${has?'Variants':'＋ Add'}</div></span></button>`}).join('')+(hits.length?'':'<div class="suggestion-item muted">Product nahi mila — spelling ya barcode check karein.</div>');box.classList.add('show')}
+function productHaystack(p){return [p.name,p.localName,p.sku,p.barcode,p.category,p.brand].join(' ').toLocaleLowerCase()}
+function findProducts(q,cat=''){const raw=q.trim().toLocaleLowerCase();if(!raw)return db.products.filter(p=>p.active!==false&&(!cat||p.category===cat));const words=raw.split(/\s+/).filter(w=>w.length>=1);return db.products.filter(p=>{if(p.active===false||(cat&&p.category!==cat))return false;const h=productHaystack(p);return words.every(w=>h.includes(w)||searchTerms(w).some(t=>h.includes(t)))})}
+function renderProductSuggestions(ps,q){const box=document.getElementById('product-suggestions');if(!box)return;const show=q.trim().length>=1;if(!show){box.classList.remove('show');box.innerHTML='';return}const hits=ps.slice(0,7);box.innerHTML=hits.map(p=>{const has=(p.variants||[]).length>0;const stock=has?p.variants.reduce((n,v)=>n+num(v.stock),0):num(p.stock);return `<button type="button" class="suggestion-item" onclick="chooseProduct('${String(p.id)}')"><span><span class="suggestion-name">${esc(p.name)}</span><div class="suggestion-meta">${esc(p.localName||p.brand||p.category||'Saved item')} · ${has?p.variants.length+' sizes':'Stock '+stock+' '+esc(p.unit)}</div></span><span style="text-align:right"><b>${has?'Choose size':money(p.price)}</b><div class="small muted">${has?'Variants':'＋ Add'}</div></span></button>`}).join('')+(hits.length?'':'<div class="suggestion-item muted">Product nahi mila — spelling ya barcode check karein.</div>');box.classList.add('show')}
 function handleProductSearchKey(e){if(e.key==='Escape'){const b=document.getElementById('product-suggestions');b?.classList.remove('show');return}if(e.key==='Enter'){const q=e.currentTarget.value.trim(),ps=findProducts(q,document.getElementById('pos-category').value);if(ps.length){e.preventDefault();chooseProduct(ps[0].id)}}}
 function renderPOSProducts(){const input=document.getElementById('pos-search'),q=input.value.trim(),cat=document.getElementById('pos-category').value;let ps=findProducts(q,cat);document.getElementById('product-count').textContent=ps.length+' items';renderProductSuggestions(ps,q);document.getElementById('pos-products').innerHTML=ps.length?ps.map(p=>{const has=(p.variants||[]).length>0,stock=has?p.variants.reduce((n,v)=>n+num(v.stock),0):num(p.stock);return `<button type="button" class="product-card" onclick="chooseProduct('${String(p.id)}')"><div class="between"><span class="pill">${esc(p.category)}</span><span class="stock ${stock<=Number(p.lowStock??db.settings.lowStock)?'low':''}">${stock} ${has?'units':esc(p.unit)}</span></div><div class="pname">${esc(p.name)}</div><div class="small muted">${esc(p.localName||p.sku||'')}</div><div class="between"><span class="price">${has?'From '+money(Math.min(...p.variants.map(v=>num(v.price)) )):money(p.price)}</span><span class="small muted">${has?p.variants.length+' sizes':'/'+esc(p.unit)}</span></div><span class="btn sm full">${has?'Choose size / pack':'＋ Add to bill'}</span></button>`}).join(''):'<div class="empty">No products found. Add this item in Stock.</div>'}
 function chooseProduct(pid){const p=db.products.find(x=>String(x.id)===String(pid));if(!p)return toast('Product nahi mila.');if((p.variants||[]).length){openVariantPicker(p.id);return}addToCart(p.id)}
@@ -437,55 +415,116 @@ function showReceipt(s){
  lastInvoice=s;openModal('Professional Bill Preview',`<div id="receipt-modal-content"></div>`);document.getElementById('receipt-modal-content').appendChild(area);area.style.display='block';
 } 
 function downloadReceiptText(){if(!lastInvoice)return;const s=lastInvoice,shop=db.settings||{};const lines=[shop.shop||'HUMA TRADERS',shop.address||'Solapur, Maharashtra',shop.phone?'Mob: '+shop.phone:'','================================',`Bill: ${s.invoice}`,`Date: ${dateText(s.date)}`,`Customer: ${s.customerName||'Walk-in Customer'}`,'--------------------------------','ITEM              QTY   RATE   AMOUNT',...(s.items||[]).map(i=>`${i.name}  ${i.qty} ${i.unit||''}  ${money(i.price)}  ${money(i.qty*i.price)}`),'--------------------------------',`Subtotal: ${money(s.subtotal)}`,`Discount: ${money(s.discount)}`,`Tax: ${money(s.tax)}`,`TOTAL: ${money(s.total)}`,`Payment: ${s.mode}`,`Paid: ${money(s.paid)}`,...(s.due>0?[`Balance due: ${money(s.due)}`]:[]),'================================',shop.footer||'Thank you! Visit again.'].filter(Boolean).join('\n');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([lines],{type:'text/plain;charset=utf-8'}));a.download=`${s.invoice||'huma-bill'}.txt`;a.click();URL.revokeObjectURL(a.href)}
-// Bluetooth printer discovery: Web Bluetooth supports BLE/GATT only, not generic Bluetooth Classic/SPP.
+// HUMA TRADERS printer engine v2
+// Android Classic SPP requires a native WebView bridge: window.HumaPrinter.
+// BLE mode is best-effort and only works when the printer exposes a writable GATT characteristic.
 let humaBlePrinter = null;
+let humaBleWriteCharacteristic = null;
+let humaPrinterTransport = 'none';
+const HUMA_PRINTER_SERVICE_HINTS = [
+ '0000ffe0-0000-1000-8000-00805f9b34fb',
+ '0000fff0-0000-1000-8000-00805f9b34fb',
+ '6e400001-b5a3-f393-e0a9-e50e24dcca9e',
+ '49535343-fe7d-4ae5-8fa9-9fafd205e455',
+ '49535343-8841-43f4-a8d4-ecbe34729bb3',
+ '0000180f-0000-1000-8000-00805f9b34fb',
+ '0000180a-0000-1000-8000-00805f9b34fb'
+];
 function setPrinterStatus(title, detail, good=false){
  const pill=document.getElementById('printer-status-pill'),box=document.getElementById('printer-status-detail');
  if(pill){pill.textContent=title;pill.style.background=good?'#dff6e9':'#fff3d7';pill.style.color=good?'#075c40':'#73530a';}
  if(box)box.textContent=detail;
 }
+function getHumaPrinterBridge(){return window.HumaPrinter&&typeof window.HumaPrinter==='object'?window.HumaPrinter:null;}
+function utf8Bytes(text){return new TextEncoder().encode(String(text));}
+function bytesToBase64(bytes){let bin='';for(let i=0;i<bytes.length;i++)bin+=String.fromCharCode(bytes[i]);return btoa(bin);}
+function safePrinterText(value){return String(value??'').normalize('NFKD').replace(/[\u0300-\u036f]/g,'').replace(/[^\x20-\x7E\n\r\t]/g,'?');}
+function escPosReceiptText(s, test=false){
+ if(!test && s && (s.items||[]).some(it=>/[^\x00-\x7F]/.test(String(it.name||''))))throw new Error('Bill mein Hindi/Marathi product names hain. ESC/POS text mode unhe sahi encode nahi kar sakta; Unicode-safe Android print bridge ya system print fallback use karein.');
+ const shop=db.settings||{},w=String(shop.paperWidth||'58'),cols=w==='80'?48:32;
+ const cut=t=>{t=safePrinterText(t).replace(/\s+/g,' ').trim();return t.length>cols?t.slice(0,cols):t};
+ const center=t=>{t=cut(t);return ' '.repeat(Math.max(0,Math.floor((cols-t.length)/2)))+t};
+ const line='-'.repeat(cols),out=['\x1B@','\x1Ba\x01','\x1B!\x08',center(shop.shop||'HUMA TRADERS'),'\x1B!\x00',center(shop.address||'Solapur, Maharashtra')];
+ if(shop.phone)out.push(center('Mob: '+shop.phone));
+ out.push(line,center(test?'PRINTER TEST':'SALE INVOICE'),'\x1Ba\x00');
+ if(test){out.push('Printer connection test', 'Paper: '+w+' mm',new Date().toLocaleString('en-IN'),line,center('HUMA TRADERS'));}
+ else {
+  out.push('Bill: '+(s.invoice||''),'Date: '+dateText(s.date),'Customer: '+(s.customerName||'Walk-in Customer'),line);
+  for(const it of (s.items||[])){
+   const nm=cut(it.name),qty=String(it.qty??0)+' '+String(it.unit||'');
+   out.push(nm,('  '+qty).slice(0,Math.max(0,cols-12)).padEnd(Math.max(0,cols-12))+' '+String(money(it.price)).slice(-10),('  Amount: '+money(Number(it.qty||0)*Number(it.price||0))).slice(0,cols));
+  }
+  out.push(line,'Subtotal: '+money(s.subtotal));if(num(s.discount)>0)out.push('Discount: -'+money(s.discount));if(num(s.tax)>0)out.push('Tax: '+money(s.tax));
+  out.push('\x1B!\x08','TOTAL: '+money(s.total),'\x1B!\x00','Payment: '+(s.mode||'CASH'),'Paid: '+money(s.paid));if(num(s.due)>0)out.push('Balance due: '+money(s.due));
+ }
+ out.push(line,center(shop.footer||'Thank you! Visit again.'),center('HUMA TRADERS'),'\n\n\n','\x1DVA\x00');
+ return utf8Bytes(out.join('\n'));
+}
+async function writeBleBytes(bytes){
+ if(!humaBlePrinter?.gatt?.connected||!humaBleWriteCharacteristic)throw new Error('BLE printer writable characteristic nahi mili.');
+ const ch=humaBleWriteCharacteristic,chunkSize=ch.properties.writeWithoutResponse?180:180;
+ for(let i=0;i<bytes.length;i+=chunkSize){const part=bytes.slice(i,i+chunkSize);if(ch.writeValueWithoutResponse&&ch.properties.writeWithoutResponse)await ch.writeValueWithoutResponse(part);else if(ch.writeValueWithResponse)await ch.writeValueWithResponse(part);else await ch.writeValue(part);if(i+chunkSize<bytes.length)await new Promise(r=>setTimeout(r,25));}
+}
+async function sendPrinterBytes(bytes){
+ const bridge=getHumaPrinterBridge();
+ if(bridge&&typeof bridge.printEscPos==='function'){
+  const result=bridge.printEscPos(bytesToBase64(bytes),String(db.settings.paperWidth||'58'));
+  if(result!==true)throw new Error('Android SPP print fail hua. More → Bluetooth Thermal Printer mein status dekhein.');
+  return 'Android Bluetooth SPP';
+ }
+ if(humaPrinterTransport==='ble'&&humaBleWriteCharacteristic){await writeBleBytes(bytes);return 'Bluetooth BLE';}
+ throw new Error('Direct printer transport ready nahi hai. BluPrints Classic SPP ke liye Android APK mein HumaPrinter native bridge zaroori hai.');
+}
 async function searchAndConnectPrinter(){
- if(!('bluetooth' in navigator) || !navigator.bluetooth || !navigator.bluetooth.requestDevice){
-  setPrinterStatus('Browser unsupported','Web Bluetooth is not available in this browser/context. Pair the printer in Android Settings → Bluetooth, then use its printing app or Android print service.');
-  alert('Is browser/file mein Bluetooth device search available nahi hai. App ko HTTPS website par Chrome mein kholein. Agar printer Bluetooth Classic/SPP hai, direct HTML connection supported nahi hota; printer app se print karein.'); return;
+ const bridge=getHumaPrinterBridge();
+ if(bridge&&typeof bridge.connectPrinter==='function'){
+  try{
+   setPrinterStatus('Connecting SPP…','Paired Bluetooth printer BPrinter050014 se connection ban raha hai.');
+   const ok=bridge.connectPrinter('BPrinter050014');
+   if(ok){humaPrinterTransport='native';try{localStorage.setItem('humaPrinterName','BPrinter050014')}catch(e){}setPrinterStatus('SPP connected','BPrinter050014 — Bluetooth Classic SPP ready. Test receipt bhej sakte hain.',true);toast('BluPrints SPP connected.');return;}
+   const st=bridge.getStatus?JSON.parse(bridge.getStatus()):{};
+   throw new Error(st.message||'Connection nahi bana. Android Bluetooth settings mein printer pair karke dobara try karein.');
+  }catch(e){setPrinterStatus('SPP connection failed',e.message||String(e));alert(e.message||String(e));return;}
+ }
+ if(!('bluetooth' in navigator)||!navigator.bluetooth||!navigator.bluetooth.requestDevice){
+  setPrinterStatus('APK required for SPP','Browser PWA Classic Bluetooth SPP socket nahi khol sakta. BluPrints direct print ke liye Android APK use karein.');
+  alert('BluPrints Classic SPP direct printing ke liye HUMA TRADERS Android APK kholen.');return;
  }
  try{
-  setPrinterStatus('Searching…','Bluetooth device chooser khul raha hai. Apne printer ko select karein.');
-  // acceptAllDevices lets the user see compatible BLE devices; optionalServices is needed for GATT access.
-  const device=await navigator.bluetooth.requestDevice({acceptAllDevices:true, optionalServices:['battery_service','device_information']});
-  humaBlePrinter=device;
-  device.addEventListener('gattserverdisconnected',()=>setPrinterStatus('Disconnected','Printer ka BLE connection disconnect ho gaya. Search & Connect dobara dabayein.'));
-  if(!device.gatt){setPrinterStatus('Selected, no GATT','Device selected but does not expose BLE GATT. It may be a Bluetooth Classic printer.');alert('Printer select hua, lekin BLE GATT service nahi mili. Yeh printer shayad Bluetooth Classic/Spp hai. Android Settings mein pair karke manufacturer printer app se print karein.');return;}
-  setPrinterStatus('Connecting…','Selected: '+(device.name||'Bluetooth device')+'. Connection establish ho raha hai.');
-  await device.gatt.connect();
-  const label=device.name||'Bluetooth printer';
-  setPrinterStatus('BLE connected',label+' se BLE connection bana. Dhyan rahe: direct receipt print tabhi chalega jab printer ka compatible print service/protocol available ho.',true);
-  try{localStorage.setItem('humaPrinterName',label)}catch(e){}
-  toast('Bluetooth BLE connected: '+label);
- }catch(err){
-  const msg=err&&err.name==='NotFoundError'?'Device select nahi hua. Printer ON rakhein aur dobara try karein.':err&&err.name==='SecurityError'?'Bluetooth ke liye HTTPS aur user permission zaroori hai.':'Connection failed: '+(err&&err.message?err.message:'Unknown error');
-  setPrinterStatus('Not connected',msg); if(err&&err.name!=='NotFoundError') alert(msg);
- }
+  setPrinterStatus('Searching BLE…','BLE devices search ho rahe hain. Classic SPP printer yahan list ho bhi sakta hai, lekin GATT printing support alag hota hai.');
+  const device=await navigator.bluetooth.requestDevice({acceptAllDevices:true,optionalServices:HUMA_PRINTER_SERVICE_HINTS});
+  humaBlePrinter=device;humaBleWriteCharacteristic=null;humaPrinterTransport='none';
+  device.addEventListener('gattserverdisconnected',()=>{humaBleWriteCharacteristic=null;humaPrinterTransport='none';setPrinterStatus('Disconnected','BLE printer disconnect ho gaya.');});
+  if(!device.gatt)throw new Error('Selected device GATT expose nahi karta. Ye Classic SPP ho sakta hai.');
+  const server=await device.gatt.connect();let services=[];
+  try{services=await server.getPrimaryServices()}catch(e){for(const uuid of HUMA_PRINTER_SERVICE_HINTS){try{services.push(await server.getPrimaryService(uuid))}catch(_){}}}
+  for(const service of services){let chars=[];try{chars=await service.getCharacteristics()}catch(_){continue;}const writable=chars.find(c=>c.properties.writeWithoutResponse||c.properties.write);if(writable){humaBleWriteCharacteristic=writable;break;}}
+  if(!humaBleWriteCharacteristic)throw new Error('BLE connected, lekin writable print characteristic nahi mili.');
+  humaPrinterTransport='ble';const label=device.name||'BLE printer';try{localStorage.setItem('humaPrinterName',label)}catch(e){}
+  setPrinterStatus('BLE print ready',label+' — writable characteristic mil gayi. Test receipt bhej sakte hain.',true);toast('BLE printer ready: '+label);
+ }catch(err){const msg=err?.name==='NotFoundError'?'Device select nahi hua.':err?.name==='SecurityError'?'HTTPS aur Bluetooth permission zaroori hai.':(err?.message||'Printer connect nahi hua.');setPrinterStatus('Print not ready',msg);if(err?.name!=='NotFoundError')alert(msg);}
 }
-function disconnectPrinter(){try{if(humaBlePrinter&&humaBlePrinter.gatt&&humaBlePrinter.gatt.connected)humaBlePrinter.gatt.disconnect();humaBlePrinter=null;setPrinterStatus('Disconnected','Browser BLE connection close kar diya. Android Bluetooth pairing alag se reh sakti hai.');toast('Printer connection closed.')}catch(e){setPrinterStatus('Disconnected','Browser connection close ho gaya.')}}
-function printPrinterTest(){
- const area=document.getElementById('print-area');
- const previous=area.innerHTML,wasDisplay=area.style.display;
- const width=String(db.settings.paperWidth||'58'),mm=width==='80'?80:58;
- area.innerHTML=`<div class="receipt pro-receipt" style="--receipt-width:${mm-4}mm;width:${mm-4}mm;max-width:${mm-4}mm;margin:0 auto;padding:2mm;border:0;box-shadow:none"><div class="receipt-brand"><h2>HUMA TRADERS</h2><div class="receipt-tagline">PRINTER TEST</div></div><div class="receipt-rule">------------------------------</div><div class="receipt-meta"><span>Status</span><b>TEST PRINT</b></div><div class="receipt-meta"><span>Paper</span><b>${mm} mm</b></div><div class="receipt-meta"><span>Date</span><b>${new Date().toLocaleString('en-IN')}</b></div><div class="receipt-rule">------------------------------</div><div class="receipt-thanks">If this receipt prints clearly, paper setup is OK.</div><div class="receipt-end">HUMA TRADERS Professional Pro</div></div>`;
- area.style.display='block';
- let style=document.getElementById('thermal-print-style');if(!style){style=document.createElement('style');style.id='thermal-print-style';document.head.appendChild(style)}
- style.textContent=`@media print{@page{size:${mm}mm auto;margin:0}html,body{width:${mm}mm!important;min-width:${mm}mm!important;margin:0!important;padding:0!important;background:#fff!important}body *{visibility:hidden!important}#print-area,#print-area *{visibility:visible!important}#print-area{position:absolute!important;left:0!important;top:0!important;width:${mm}mm!important;min-width:${mm}mm!important;margin:0!important;padding:0!important;background:#fff!important}.pro-receipt{width:${mm-4}mm!important;max-width:${mm-4}mm!important;margin:0!important;padding:2mm!important;border:0!important;box-shadow:none!important}.receipt-actions{display:none!important}}`;
- try{window.print()}catch(e){alert('Print dialog could not open. Open this app in Chrome and choose Print.')}finally{setTimeout(()=>{area.innerHTML=previous;area.style.display=wasDisplay||'none'},800)}
+function disconnectPrinter(){try{if(humaBlePrinter?.gatt?.connected)humaBlePrinter.gatt.disconnect();humaBlePrinter=null;humaBleWriteCharacteristic=null;humaPrinterTransport='none';const b=getHumaPrinterBridge();if(b&&typeof b.disconnect==='function')b.disconnect();setPrinterStatus('Disconnected','Printer connection close kar diya. Android Bluetooth pairing alag reh sakti hai.');toast('Printer disconnected.')}catch(e){setPrinterStatus('Disconnected','Connection close ho gaya.')}}
+function buildUnicodeReceiptText(s, test=false){
+ const shop=db.settings||{},lines=[shop.shop||'HUMA TRADERS',shop.address||'Solapur, Maharashtra',shop.phone?'मोबाइल: '+shop.phone:'','--------------------------------',test?'PRINTER TEST':'बिक्री बिल'];
+ if(test){lines.push('Bluetooth SPP कनेक्शन टेस्ट', 'Paper: '+(shop.paperWidth||'58')+' mm',new Date().toLocaleString('en-IN'));}
+ else {lines.push('Bill: '+(s.invoice||''),'Date: '+dateText(s.date),'Customer: '+(s.customerName||'Walk-in Customer'),'--------------------------------','ITEM / वस्तु | QTY | RATE | AMOUNT');for(const it of (s.items||[])){lines.push(String(it.name||''),String(it.qty??0)+' '+String(it.unit||'')+' × '+money(it.price), 'Amount: '+money(Number(it.qty||0)*Number(it.price||0)));}lines.push('--------------------------------','Subtotal: '+money(s.subtotal));if(num(s.discount)>0)lines.push('Discount: -'+money(s.discount));if(num(s.tax)>0)lines.push('Tax: '+money(s.tax));lines.push('TOTAL: '+money(s.total),'Payment: '+(s.mode||'CASH'),'Paid: '+money(s.paid));if(num(s.due)>0)lines.push('Balance due: '+money(s.due));}
+ lines.push('--------------------------------',shop.footer||'Thank you! Visit again.','HUMA TRADERS','','');return lines.join('\n');
+}
+async function printPrinterTest(){
+ try{setPrinterStatus('Printing test…','Printer ko test receipt bhej rahe hain.');const bridge=getHumaPrinterBridge();let transport;if(bridge&&typeof bridge.printTextRaster==='function'){const ok=bridge.printTextRaster(bytesToBase64(utf8Bytes(buildUnicodeReceiptText(null,true))),String(db.settings.paperWidth||'58'));if(ok!==true)throw new Error('Android SPP raster test print fail hua. '+(bridge.getStatus?bridge.getStatus():''));transport='Android Bluetooth SPP (Unicode raster)';}else transport=await sendPrinterBytes(escPosReceiptText(null,true));setPrinterStatus('Test sent',transport+' par test receipt data bheja gaya. Paper output check karein.',true);toast('Test receipt sent via '+transport);}catch(e){setPrinterStatus('Print unavailable',e.message||String(e));alert(e.message||String(e));}
+}
+async function printThermalReceipt(){
+ if(!lastInvoice){toast('No bill selected.');return;}
+ try{
+  const bridge=getHumaPrinterBridge();let transport;
+  if(bridge&&typeof bridge.printTextRaster==='function'){const ok=bridge.printTextRaster(bytesToBase64(utf8Bytes(buildUnicodeReceiptText(lastInvoice,false))),String(db.settings.paperWidth||'58'));if(ok!==true)throw new Error('Android SPP print fail hua. '+(bridge.getStatus?bridge.getStatus():''));transport='Android Bluetooth SPP (Unicode raster)';}
+  else transport=await sendPrinterBytes(escPosReceiptText(lastInvoice,false));
+  setPrinterStatus('Bill sent to printer',transport+' par invoice '+(lastInvoice.invoice||'')+' bheja gaya.',true);
+  toast('Bill print data sent. Paper output verify karein.');
+ }catch(err){const msg=err&&err.message?err.message:String(err);setPrinterStatus('Direct print unavailable',msg);alert('Direct Bluetooth print nahi hua.\n\n'+msg+'\n\nAPK mein printer pair karke Search & Connect karein.');}
 }
 
-function printThermalReceipt(){
- const width=String(db.settings.paperWidth||'58');let style=document.getElementById('thermal-print-style');
- if(!style){style=document.createElement('style');style.id='thermal-print-style';document.head.appendChild(style)}
- if(width==='a4'){style.textContent='@media print{@page{size:A4 portrait;margin:8mm}html,body{width:auto!important;margin:0!important;padding:0!important}#print-area{position:absolute!important;left:0;top:0;width:100%!important;margin:0!important;padding:0!important}.pro-receipt{width:78mm!important;max-width:100%!important;margin:0 auto!important;padding:5mm!important;border:0!important}.receipt-actions{display:none!important}}'}
- else{const mm=width==='80'?80:58;style.textContent=`@media print{@page{size:${mm}mm auto;margin:0}html,body{width:${mm}mm!important;min-width:${mm}mm!important;margin:0!important;padding:0!important;background:#fff!important}#print-area{position:absolute!important;left:0!important;top:0!important;width:${mm}mm!important;min-width:${mm}mm!important;margin:0!important;padding:0!important;background:#fff!important}.pro-receipt{width:${mm-4}mm!important;max-width:${mm-4}mm!important;min-width:0!important;margin:0!important;padding:2mm!important;border:0!important;box-shadow:none!important;font-size:9px!important}.pro-receipt h2{font-size:${mm===58?13:16}px!important}.receipt-items{width:100%!important;min-width:0!important;table-layout:fixed!important;font-size:${mm===58?7.5:9}px!important}.receipt-items th,.receipt-items td{padding:2px 0!important;overflow-wrap:anywhere;word-break:break-word}.receipt-items .item-cell{width:43%}.receipt-items .qty-cell{width:12%}.receipt-items .rate-cell{width:20%}.receipt-items .amt-cell{width:25%}.receipt-qr img{width:${mm===58?30:38}mm!important;height:${mm===58?30:38}mm!important}.receipt-actions{display:none!important}}`}
- try{window.print()}catch(e){toast('Print dialog could not open. Use Chrome menu → Print.')}
-}
 function closeReceiptView(){const area=document.getElementById('print-area');area.style.display='none';document.body.appendChild(area);closeModal()}
 function updateDashboard(){const ss=db.sales.filter(s=>s.dateKey===today());const values={'m-sales':money(ss.reduce((s,x)=>s+x.total,0)),'m-collected':money(ss.reduce((s,x)=>s+x.paid,0)),'m-credit':money(db.customers.reduce((s,c)=>s+num(c.balance),0)),'m-low':db.products.filter(p=>p.stock<=Number(p.lowStock??db.settings.lowStock)).length};for(const [id,value] of Object.entries(values)){const el=document.getElementById(id);if(el)el.textContent=value}}
 function renderRecentTransactions(){const el=document.getElementById('recent-transactions');if(!el)return;const sales=db.sales.slice(0,4);el.innerHTML=sales.length?sales.map(s=>`<div class="recent-item"><div><div class="recent-title">${esc(s.customerName||'Walk-in Customer')}</div><div class="recent-meta">${esc(s.invoice)} · ${dateText(s.date)} · ${esc(s.mode||'CASH')}</div><div class="recent-meta">${(s.items||[]).length} item(s) · ${s.due>0?'<span class="danger-text">Due '+money(s.due)+'</span>':'<span class="status">Paid</span>'}</div></div><div><div class="recent-amount">${money(s.total)}</div><div class="recent-actions"><button class="btn light sm" onclick="showReceiptById(${s.id})">View bill</button></div></div></div>`).join(''):'<div class="empty">No transactions yet. Complete a sale and it will appear here.</div>'}
